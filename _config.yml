@@ -81,9 +81,9 @@ analytics:
 # Site Author
 author:
   name             : "Haoran Sun"
-  avatar           : "profile5.png"
-  bio              : "Your biography for the left-hand sidebar"
-  location         : 
+  avatar           : "profile.png"
+  bio              : "Undergraduate student majoring bioinformatics at CUHK-Shenzhen"
+  location         : "Shenzhen, China"
   employer         :
   pubmed           : 
   googlescholar    : 
