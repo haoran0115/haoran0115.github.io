@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Haoran Sun's Page"
+title                    : "Haoran's Homepage"
 title_separator          : "-"
 name                     : &name "Haoran Sun"
 description              : &description "personal description"
