@@ -1,4 +1,4 @@
 _site/
-cv/
+cv/*
 !cv/cv.pdf
 preview.sh
