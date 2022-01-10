@@ -9,7 +9,7 @@ redirect_from:
 ---
 
 ## Brief introduction
-I am a undergraduate student majoring bioinformatics and minoring mathematics at CUHK-Shenzhen who are expected to graduate at 2023.
+I am a undergraduate student majoring bioinformatics and minoring mathematics at CUHK-Shenzhen who are expected to graduate in 2023.
 
 ## My plan
 With a strong interest in the nature of physics and chemistry, I am seeking a postgraduate degree about computational chemistry/biology currently.
@@ -17,8 +17,5 @@ With a strong interest in the nature of physics and chemistry, I am seeking a po
 ## Skills
 Although I hardly took any CS-related courses during undergraduate study, benefit from a strong I am able to perform basic programming using `Python`, `Fortran` and `CUDA C/Fortran` languages on Linux. Please take my Github repositories as reference.
 
-## Test math formulas
-$$
-\mathbf{j} = -\nabla\cdot c
-$$
+
 
