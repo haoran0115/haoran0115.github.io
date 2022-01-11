@@ -1,11 +1,8 @@
 ---
 layout: archive
 title: "Teaching"
-permalink: /teaching
+permalink: /teaching/
 author_profile: true
-redirect_from: 
-  - /teaching/
-  - /teaching.html
 ---
 
 I am willing to teach students about every detail in theories and algorithms, and try to let them understand difficult knowledge in the most intuitive way.
