@@ -1,3 +1,5 @@
 _site/
 preview.sh
-cv/template
+cv/*
+!cv/cv.pdf
+!cv/cv.tex

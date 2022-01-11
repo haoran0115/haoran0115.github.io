@@ -8,21 +8,21 @@ redirect_from:
   - /about.html
 ---
 
-## Brief introduction
-I am a undergraduate student majoring bioinformatics and minoring mathematics at CUHK-Shenzhen who are expected to graduate in 2023.
+## Who am I
+I am an undergraduate student majoring in bioinformatics and minoring in mathematics at CUHK-Shenzhen expected to graduate in 2023.
 
 ## Seeking positions!
-With a strong interest in the nature of physics and chemistry, I am seeking for a postgraduate degree about computational chemistry/biology currently.
+With a strong interest in the nature of physics and chemistry, I am seeking a postgraduate degree in computational chemistry/biology currently.
 
 ## Skills
-Although I hardly took any CS-related courses during undergraduate study, benefit from the ability of self-learning and willing to implement my thoughts, I am able to perform basic programming using `Python`, `Fortran` and `CUDA C/Fortran` languages on Linux. Please take my Github repositories as reference.
+Although I hardly took any CS-related courses during undergraduate study, benefit from the ability of self-learning and willing to implement my thoughts, I can perform basic programming using `Python`, `Fortran` and `CUDA C/Fortran` languages on Linux. I am also able to use traditional and up-to-date programming tools to make my work organized. Please take my [Github repositories](https://github.com/haoran0115) and [cv](cv/cv.pdf) as a reference.
 
 ## Interest
 * Computational chemistry methods and applications
-* Statistical mechanics theory and related algorithms
-* Statistical learning apply on computational chemistry/biology
+* Statistical mechanics theories and related algorithms
+* Statistical learning algorithms applied on computational chemistry/biology study
 
 ## Hobby & life
-You may refer to [my blog site](https://zein0115.github.io).
+You may visit [my blog site](https://zein0115.github.io).
 
 

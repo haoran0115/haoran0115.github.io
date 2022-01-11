@@ -12,9 +12,9 @@
 % \usepackage{fontspec}
 % \setmainfont{Calibri}
 
-% Chinese support
-\usepackage{xeCJK}
-\setCJKmonofont{SimSun}
+% % Chinese support
+% \usepackage{xeCJK}
+% \setCJKmonofont{SimSun}
 
 % theme
 \moderncvtheme[blue]{classic}
@@ -38,6 +38,9 @@
 % re-define section as cvsection
 \newcommand{\cvsection}[1]{\section{\textsc{#1}}}
 \newcommand{\ntf}{\hl{\textbf{xxx}}}
+
+% make content compact
+\linespread{0.9}
 
 \begin{document}
 \maketitle
@@ -71,18 +74,17 @@
 \cvsection{Teaching Experiences}
 \cventry{Sept. 2021--Dec. 2021}
         {Undergraduate student teaching fellow (USTF)}{}
-        {Computation Biology (BIM2005)}{CUHK-Shenzhen}
-        {
-            \begin{itemize}
-                \item Tuturial session about how to use molecular docking tool Autodock-vina.
-                \item Tutorial session to help student review basic principles of quantum mechanics and quantum chemistry.
-                \item Tutorial session about mathematical background and hands-on python implementation of principle component decomposition (PCA) algorithm.
-            \end{itemize}
-        }
+        {Computation Biology (BIM2005)}{CUHK-Shenzhen, 4 tutorial sessions}
+        {}
+        %     \begin{itemize}
+        %         \item Tuturial session about how to use molecular docking tool Autodock-vina.
+        %         \item Tutorial session to help student review basic principles of quantum mechanics and quantum chemistry.
+        %         \item Tutorial session about mathematical background and hands-on python implementation of principle component decomposition (PCA) algorithm.
+        %     \end{itemize}
 
 \cventry{Jan. 2022--May 2022}
         {Undergraduate student teaching fellow (USTF)}{}
-        {Organic Chemistry (BIO2003)}{CUHK-Shenzhen}
+        {Organic Chemistry (BIO2003)}{CUHK-Shenzhen, x tutorial sessions}
         {
                 \begin{itemize}
                     \item Tutorial session about\dots
@@ -109,10 +111,26 @@
 development of free-energy calculation and TS-searching algorithms,
 statistical learning applied on computational chemistry/biology.}
 
-\cvsection{Achievements}
+\cvsection{Achievements and Honors}
 \cventry{Sep. 2018}
         {First prize}{}
         {Chinese Chemistry Olympiad, provincial level}{}
+        {}
+\cventry{Sep. 2019--June 2023}
+        {Bowen Scholarship}{}
+        {30,000 RMB/Year (total 120,000 RMB), CUHK-Shenzhen}{}
+        {}
+\cventry{Sep. 2020}
+        {Academic Year 2019-20 Dean's List Award}{}
+        {School of Science and Engineering, CUHK-Shenzhen}{}
+        {}
+\cventry{Sep. 2021}
+        {Academic Year 2020-21 Dean's List Award}{}
+        {School of Life and Health Sciences, CUHK-Shenzhen}{}
+        {}
+\cventry{Sep. 2022}
+        {Academic Year 2021-22 Dean's List Award}{}
+        {School of Life and Health Sciences, CUHK-Shenzhen}{}
         {}
 
 \cvsection{Language Skills}
