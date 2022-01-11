@@ -5,7 +5,7 @@ permalink: /publications/
 author_profile: true
 ---
 
-No publications currently.
+No publications till now. However, I am currently working on a QM/MM study of reaction mechanism of CYP enzyme-catalyzed reactions.
 
 {% if author.googlescholar %}
   You can also find my articles on <u><a href="{{author.googlescholar}}">my Google Scholar profile</a>.</u>

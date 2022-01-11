@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{moderncv}
+\usepackage[utf8]{inputenc}
+\usepackage[scale=0.9]{geometry}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{soul}
+
+% main font
+\usepackage[mono=false]{libertine}
+
+% % calibre font
+% \usepackage{fontspec}
+% \setmainfont{Calibri}
+
+% Chinese support
+\usepackage{xeCJK}
+\setCJKmonofont{SimSun}
+
+% theme
+\moderncvtheme[blue]{classic}
+
+\recomputelengths
+\firstname{Haoran}
+\familyname{SUN}
+% \title{Undergraduate student}
+\address{2001 Longxiang Road}{Longgang District}{Shenzhen, China}
+% \mobile{+86 139 1029 0104}
+% \phone{+86 139 1029 0104}
+\email{haoransun@link.cuhk.edu.cn}
+\social[github]{haoran0115}
+\homepage{haoran0115.github.io}
+% \photo[64pt]{jdoe_picture}
+\quote{The world opens itself before those with noble hearts.}
+
+% set width of cventry
+\settowidth{\hintscolumnwidth}{Sept. 2021--Dec. 2021}
+
+% re-define section as cvsection
+\newcommand{\cvsection}[1]{\section{\textsc{#1}}}
+\newcommand{\ntf}{\hl{\textbf{xxx}}}
+
+\begin{document}
+\maketitle
+% \section{Basic information}
+
+\cvsection{Education}
+\cventry{Sept. 2019--June 2023 (expected)}
+        {B.Sc.}
+        {}
+        {Bioinformacis and mathematics (minor), Chinese university of Hong Kong, Shenzhen (CUHK-Shenzhen)}
+        {}
+        {Major GPA: 3.7, minor GPA: 3.x, cumulative GPA: 3.6}
+% \cvline{}{\footnotesize
+%     \begin{tabular*}{0.78\textwidth}{@{\extracolsep{\fill}}cccc}
+%         \toprule
+%         Calculus I & Calculus II & \makecell[c]{General\\Chemistry} & \makecell[c]{Programming\\Methodology} \\ \midrule
+%         3.70/4.00 & 4.00/4.00 & 4.00/4.00 & 4.00/4.00 \\ 
+%         \toprule\\
+%         \toprule
+%         \makecell[c]{Computational\\Biology} & Biochem. & \makecell[c]{Linear\\Algebra} & \makecell[c]{Prob. and\\Stats. Inference} \\ \midrule
+%         4.00/4.00 & 3.70/4.00 & 4.00/4.00 & 4.00/4.00 \\ \bottomrule
+%     \end{tabular*}
+% }
+
+\cvsection{Skills}
+% \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
+\cvline{Coding langs}{Bash, Python, Fortran, CUDA C/Fortran, \LaTeX}
+\cvline{Programming tools}{Vim, VSCode, Jupyter Lab}
+\cvline{Compt. chem. tools}{Gaussian, Amber, Gromacs}
+
+\cvsection{Teaching Experiences}
+\cventry{Sept. 2021--Dec. 2021}
+        {Undergraduate student teaching fellow (USTF)}{}
+        {Computation Biology (BIM2005)}{CUHK-Shenzhen}
+        {
+            \begin{itemize}
+                \item Tuturial session about how to use molecular docking tool Autodock-vina.
+                \item Tutorial session to help student review basic principles of quantum mechanics and quantum chemistry.
+                \item Tutorial session about mathematical background and hands-on python implementation of principle component decomposition (PCA) algorithm.
+            \end{itemize}
+        }
+
+\cventry{Jan. 2022--May 2022}
+        {Undergraduate student teaching fellow (USTF)}{}
+        {Organic Chemistry (BIO2003)}{CUHK-Shenzhen}
+        {
+                \begin{itemize}
+                    \item Tutorial session about\dots
+                \end{itemize}
+                }
+
+% \section{\textsc{Projects}}
+
+\cvsection{Research Experiences}
+\cventry{Apr. 2021--May. 2023 (expected)}
+        {Research assistant}{}
+        {Hajime HIRAO's research group}{Warshel Institute
+        for Computational Biology}
+        {Computational chemistry/biology, MD simulation, QM/MM}
+\cventry{Jan. 2020--Apr. 2021}
+        {Research assistant}{}
+        {Hsien-da HUANG's research group}{Warshel Institute
+        for Computational Biology}
+        {Multi-omics research, expression data analysis}
+
+
+\cvsection{Research Interests}
+\cvline{}{Computational chemistry/biology,
+development of free-energy calculation and TS-searching algorithms,
+statistical learning applied on computational chemistry/biology.}
+
+\cvsection{Achievements}
+\cventry{Sep. 2018}
+        {First prize}{}
+        {Chinese Chemistry Olympiad, provincial level}{}
+        {}
+
+\cvsection{Language Skills}
+\cvline{}{Chinese (native), English (TOEFL xxx), Japanese (elementary, only be able to read)}
+
+% \section{Hobby}
+% \cvline{hobby 1}{\small Description}
+
+
+\end{document}
+
