@@ -3,3 +3,5 @@ preview.sh
 cv/*
 !cv/cv.pdf
 !cv/cv.tex
+tmp
+Gemfile.lock
