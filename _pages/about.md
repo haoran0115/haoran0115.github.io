@@ -16,7 +16,7 @@ I am an undergraduate student majoring in bioinformatics and minoring in mathema
 With a strong interest in the nature of physics and chemistry, I am seeking a postgraduate degree in computational chemistry/biology currently.
 
 ## Many things...
-I love mathematics, physics and chemistry. But since I want to get in touch with interdisciplinary research as early as possible, I choose the major bioinformatics for the study of structural bioinformatics and computational biology.
+I love mathematics, physics and chemistry. But since I want to get in touch with interdisciplinary research as early as possible, I choose the major bioinformatics for the study of structural bioinformatics and computational chemistry/biology.
 
 Although I hardly took any CS-related courses during undergraduate study, benefit from the ability of self-learning and willing to implement my thoughts, I can perform basic programming using `Python`, `Fortran` and `CUDA C/Fortran` languages on Linux. I am also able to use traditional and up-to-date programming tools to make my work organized. Please take my [Github repositories](https://github.com/haoran0115), [blog posts](year-archive/) and [cv](cv/cv.pdf) as references.
 
