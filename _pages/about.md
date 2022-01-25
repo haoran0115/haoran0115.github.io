@@ -10,7 +10,7 @@ redirect_from:
 Welcome to my homepage!
 
 ## Who am I
-I am an undergraduate student majoring in bioinformatics and minoring in mathematics at CUHK-Shenzhen expected to graduate in 2023.
+I am an undergraduate student majoring in bioinformatics at CUHK-Shenzhen expected to graduate in 2023.
 
 ## Seeking positions!
 With a strong interest in the nature of physics and chemistry, I am seeking a postgraduate degree in computational chemistry/biology currently.
