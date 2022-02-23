@@ -10,4 +10,6 @@ bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
 ```
 # navigation settings
 _data/navigation.yml
+# absolute directories: add{{ site.baseurl}}
+Test link: [pdb]({{ site.baseurl}}/files/pdb/6j83.pdb).
 ```
