@@ -16,7 +16,7 @@ No publications till now. However, I am currently working on a QM/MM study of th
 let element = $('#container-01');
 let config = {};
 let viewer = $3Dmol.createViewer( element, config );
-let pdbUri = '/_data/pdb/6j83.pdb';
+let pdbUri = '_data/pdb/6j83.pdb';
 jQuery.ajax( pdbUri, { 
   success: function(data) {
     let v = viewer;
@@ -43,7 +43,7 @@ jQuery.ajax( pdbUri, {
 </style>
 </html>
 
-Structure reference: ![6j83](https://www.rcsb.org/structure/6J83).
+Structure reference: [6j83](https://www.rcsb.org/structure/6J83).
 
 {% if author.googlescholar %}
   You can also find my articles on <u><a href="{{author.googlescholar}}">my Google Scholar profile</a>.</u>
