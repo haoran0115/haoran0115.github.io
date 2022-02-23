@@ -15,7 +15,7 @@ No publications till now. However, I am currently working on a QM/MM study of th
 let element = $('#container-01');
 let config = {};
 let viewer = $3Dmol.createViewer( element, config );
-let pdbUri = '_data/pdb/6j83.pdb';
+let pdbUri = 'files/pdb/6j83.pdb';
 jQuery.ajax( pdbUri, { 
   success: function(data) {
     let v = viewer;
