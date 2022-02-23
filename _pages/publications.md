@@ -17,7 +17,7 @@ var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.spli
 let element = $('#container-01');
 let config = {};
 let viewer = $3Dmol.createViewer( element, config );
-let pdbUri = baseUrl + "/files/pdb/6j83.pdb";
+let pdbUri = "{{ site.baseurl}}/files/pdb/6j83.pdb";
 jQuery.ajax( pdbUri, { 
   success: function(data) {
     let v = viewer;
