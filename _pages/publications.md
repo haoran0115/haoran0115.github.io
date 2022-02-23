@@ -7,7 +7,7 @@ author_profile: true
 
 No publications till now. However, I am currently working on a QM/MM study of the reaction mechanism of CYP enzyme-catalyzed reactions.
 
-<script src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+<script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
 
 <div id="container-01" class="mol-container"></div>
 
