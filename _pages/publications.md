@@ -7,7 +7,6 @@ author_profile: true
 
 No publications till now. However, I am currently working on a QM/MM study of the reaction mechanism of CYP enzyme-catalyzed reactions.
 
-<html>
 <script src="http://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
 
 <div id="container-01" class="mol-container"></div>
@@ -41,7 +40,6 @@ jQuery.ajax( pdbUri, {
   position: relative;
 }
 </style>
-</html>
 
 Structure reference: [6j83](https://www.rcsb.org/structure/6J83).
 
