@@ -43,6 +43,8 @@ jQuery.ajax( pdbUri, {
 
 Structure reference: [6j83](https://www.rcsb.org/structure/6J83).
 
+Test link: [pdb](files/pdb/6j83.pdb).
+
 {% if author.googlescholar %}
   You can also find my articles on <u><a href="{{author.googlescholar}}">my Google Scholar profile</a>.</u>
 {% endif %}
