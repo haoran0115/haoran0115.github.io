@@ -12,10 +12,12 @@ No publications till now. However, I am currently working on a QM/MM study of th
 <div id="container-01" class="mol-container"></div>
 
 <script>
+var getUrl = window.location;
+var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 let element = $('#container-01');
 let config = {};
 let viewer = $3Dmol.createViewer( element, config );
-let pdbUri = '{{ site.baseurl}}/files/pdb/6j83.pdb';
+let pdbUri = baseUrl + "/files/pdb/6j83.pdb";
 jQuery.ajax( pdbUri, { 
   success: function(data) {
     let v = viewer;
