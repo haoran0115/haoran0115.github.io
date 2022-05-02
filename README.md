@@ -6,6 +6,14 @@ Forked from https://github.com/academicpages/academicpages.github.io
 bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
 ```
 
+Script
+```
+# preview.sh
+#!/usr/bin/bash
+rm -r ./_site
+bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
+```
+
 ## Notes
 ```
 # navigation settings

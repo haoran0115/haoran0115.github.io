@@ -1,12 +1,24 @@
-\documentclass[11pt,a4paper]{moderncv}
+\documentclass[12pt,a4paper,sans]{moderncv}
 \usepackage[utf8]{inputenc}
 \usepackage[scale=0.92]{geometry}
 \usepackage{makecell}
 \usepackage{booktabs}
 \usepackage{soul}
-
+\usepackage[version=3]{mhchem}
+\usepackage{fontspec}
+\usepackage{url}
+\usepackage{lipsum}
 % main font
-\usepackage[mono=false]{libertine}
+\usepackage{libertinus}
+% \usepackage{lmodern}
+% \usefonttheme{serif}
+\usepackage{inconsolata}
+\setmonofont{inconsolata}
+
+% itemize
+\usepackage{enumitem}
+\setlist{nosep}
+
 
 % % calibre font
 % \usepackage{fontspec}
@@ -20,11 +32,11 @@
 \moderncvtheme[blue]{classic}
 
 \recomputelengths
-\firstname{Haoran}
-\familyname{SUN}
+\firstname{\rmfamily Haoran}
+\familyname{\rmfamily SUN}
 % \title{Undergraduate student}
 \address{2001 Longxiang Road}{Longgang District}{Shenzhen, China}
-% \mobile{+86 139 1029 0104}
+\mobile{+86 139 1029 0104}
 % \phone{+86 139 1029 0104}
 \email{haoransun@link.cuhk.edu.cn}
 \social[github]{haoran0115}
@@ -36,7 +48,8 @@
 \settowidth{\hintscolumnwidth}{Sept. 2021--Dec. 2021}
 
 % re-define section as cvsection
-\newcommand{\cvsection}[1]{\section{\textsc{#1}}}
+% \newcommand{\cvsection}[1]{\section{\textsc{#1}}}
+\newcommand{\cvsection}[1]{\section{{#1}}}
 \newcommand{\ntf}{\hl{\textbf{xxx}}}
 
 % make content compact
@@ -46,13 +59,17 @@
 \maketitle
 % \section{Basic information}
 
+
 \cvsection{Education}
 \cventry{Sept. 2019--June 2023 (expected)}
-        {B.Sc.}
-        {}
-        {Bioinformacis, Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
-        {}
-        {CGPA: 3.67/4.00 (3/38), MGPA: 3.80/4.00 (1/38)}
+    {B.Sc.}
+    {}
+    {Bioinformacis, Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
+    {}
+    {Cumulative GPA: 3.671/4.000, rank 3/38; major GPA: 3.800/4.000, rank 1/38}
+    % {Major GPA: 3.800/4.000, rank 1/38; cumulative GPA: 3.671/4.000, rank 3/38}
+
+
 % \cvline{}{\footnotesize
 %     \begin{tabular*}{0.78\textwidth}{@{\extracolsep{\fill}}cccc}
 %         \toprule
@@ -67,86 +84,159 @@
 
 \cvsection{Skills}
 % \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
-\cvline{Coding langs}{Python, Fortran, CUDA C/Fortran (elementary)}
-\cvline{Computer skills}{Linux (including system configuration, multi-user management, and software installation), Git, \LaTeX}
-\cvline{Scientific computing}{Numpy, MATLAB}
-\cvline{Programming tools}{Vim, VSCode, Jupyter Lab}
-\cvline{Compt. chem. tools}{Gaussian, Amber, Gromacs}
+\cvline{Coding langs}{Python, Fortran, MATLAB, CUDA C++ and CUDA Fortran (elementary)}
+\cvline{Computer skills}{Linux (including system configuration, multi-user management, software
+compliation and installation), WSL, Git, \LaTeX}
+% \cvline{Scientific computing}{Numpy, MATLAB, MKL (elementary)}
+\cvline{Programming tools}{Vim, VSCode, Jupyter Lab, Windows Terminal}
+\cvline{Compt. chem. tools}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
 
 \cvsection{Teaching Experiences}
 \cventry{Sept. 2021--Dec. 2021}
-        {Undergraduate student teaching fellow (USTF)}{}
-        {Computation Biology (BIM2005)}{CUHK-Shenzhen, 4 tutorial sessions}
-        {
-            \begin{itemize}
-                \item Tutorial session about how to use molecular docking tool Autodock-vina.
-                \item Tutorial session to help the student review basic principles of quantum mechanics and quantum chemistry.
-                \item Tutorial session about the mathematical background and hands-on python implementation of principal component decomposition (PCA) algorithm.
-            \end{itemize}
-        }
+{Undergraduate student teaching fellow (USTF)}{}
+{Computational Biology (BIM2005)}{CUHK-Shenzhen}
+{
+    \begin{itemize}[itemsep=4pt]
+        \item Create a slide about how to simplify the Schrödinger equation of hydrogen atom using
+        atomic units
+        \item Tutorial session about how to use molecular docking tool Autodock-vina
+        \item Tutorial session to help the student review basic principles of quantum mechanics and quantum chemistry
+        \item Tutorial session about the mathematical background and hands-on Python implementation of principal component decomposition (PCA) algorithm
+        \item Hold office hours, homework grading, exam investigation
+    \end{itemize}
+}
 
+        
+\vspace{0.5em}
 \cventry{Jan. 2022--May 2022\newline (expected)}
-        {Undergraduate student teaching fellow (USTF)}{}
-        {Organic Chemistry (BIO2003)}{CUHK-Shenzhen}
-        {
-                % \begin{itemize}
-                %     \item Tutorial session about\dots
-                % \end{itemize}
-        }
+{Undergraduate student teaching fellow (USTF)}{}
+{Organic Chemistry (BIO2003)}{CUHK-Shenzhen}
+{
+    \begin{itemize}[itemsep=4pt]
+        \item Tutorial session about basic concepts and exercises of stereochemistry
+        \item Tutorial session about detailed mechanism of keto-enol tautomerism, aldol reaction,
+        and Claisen condensation reaction, related exercises
+        \item Hold office hours, homework grading, exam investigation
+    \end{itemize}
+}
+
+
 
 % \cvsection{Projects}
 % \cvline{Nov. 2021}{Parallel tempering of 1-D particle using Fortran}
 
 \cvsection{Research Experiences}
-\cventry{Apr. 2021--May 2023\newline (expected)}
-        {Research assistant}{}
-        {Hajime HIRAO's research group}{Warshel Institute
-        for Computational Biology}
-        {Computational chemistry/biology, MD simulation, QM/MM}
 \cventry{Jan. 2020--Apr. 2021}
-        {Research assistant}{}
-        {Hsien-da HUANG's research group}{Warshel Institute
-        for Computational Biology}
-        {Multi-omics research, expression data analysis}
+{Research assistant}{}
+{Hsien-da Huang's research group}{Warshel Institute
+for Computational Biology, CUHK-Shenzhen
+}
+{}
+\cvline{}{\small
+    \textbf{Project:} exploring how traditional Chinese medicine affects gene regulation:
+    identify DEGs using statistical methods
+    \begin{itemize}[itemsep=4pt]
+        \item Performed visualization of gene expression profile using dimensionality reduction
+        algorithms: a linear scheme using PCA and a non-linear scheme using t-SNE
+        \item Delivered a group tutorial about how to use Connectivity Map: 
+        exploring databases, submitting a query, and understanding the statistics in
+        output heatmap
+        \item Performed gene set enrichment analysis (GSEA) for traditional Chinese medicines perturbed
+        gene expression profile to identify differentially expressed genes (DEGs)
+    \end{itemize}
+}
 
 
-\cvsection{Research Interests}
-\cvline{}{Computational chemistry/biology,
-development of free-energy calculation and TS-searching algorithms,
-statistical learning applied to computational chemistry/biology.}
+\vspace{0.5em}
+\cventry{Apr. 2021--Present}
+    {Research assistant}{}
+    {Hajime Hirao's research group}{Warshel Institute
+    for Computational Biology, CUHK-Shenzhen}
+    {}
+\cvline{}{\small
+    \textbf{Project:} theoretical learning of quantum chemistry
+    \begin{itemize}[itemsep=4pt]
+        \item Learning quantum chemistry using \textit{Modern Quantum Chemistry}
+        by Attilia Szabo and Neil S.Outlund motivated of Prof. Hirao
+        \item Coding implementation of SCF algorithm using Fortran: RHF 6-31G \cee{H2} molecule and
+        UHF 6-31G \cee{H_2^-} molecule
+        \item Accelerating SCF algorithm by DIIS algorithm
+        \begin{itemize}
+            \item Fixed problematic DIIS algorithm in original group code
+        \end{itemize}
+    \end{itemize}
+}
+\cvline{}{\small
+    \textbf{Project:} reaction pathway analysis of hydroxylation reaction between P450 Cpd I and propane
+    \begin{itemize}[itemsep=4pt]
+        \item Performed scan along the reaction path and geometry optimization of intermediates
+        \item Performed calculation under different spin states
+        \item Writing python and shell script to extract information and generate instant report in
+        high-efficient way
+    \end{itemize}
+}
+\cvline{}{\small
+    \textbf{Project:} reaction pathway analysis of P450 C-S bond formation by TleB (PDB ID: 6J83)
+    \begin{itemize}[itemsep=4pt]
+        % \setlength\itemsep{0.25em}
+        \item Extracted Heme center and substrate, constructed a simplified model, 
+        and performed pure DFT calculations along the proposed reaction mechanism to get the first insight
+        of the reaction
+        \item Constructed QM/MM models, fit substrate MM parameters, performed ONIOM calculations
+        \item Performed molecular dynamics simulation to explore non-bonding interactions; compared
+        the free energy differences under different binding pose of substrate using MMPBSA method
+    \end{itemize}
+}
+\cvline{}{\small
+    \textbf{Project:} EDA and NBO analysis of the nature of coordination bonding at the
+    heme iron center in cytochrome P450 inhibition
+    \begin{itemize}[itemsep=4pt]
+        \item Determine the Lewis structures of P450 \cee{Fe^{2+}} and \cee{Fe^{3+}} species
+        \item Help to perform a part of EDA analysis
+    \end{itemize}
+}
+
+
+
+% \cvsection{Research Interests}
+% \cvline{}{Computational chemistry/biology,
+% development of free-energy calculation and TS-searching algorithms,
+% statistical learning applied to computational chemistry/biology.}
 
 \cvsection{Achievements and Honors}
 \cventry{Sep. 2018}
-        {The First prize}{}
-        {Chinese Chemistry Olympiad, provincial level}{}
-        {}
+{The First prize}{}
+{Chinese Chemistry Olympiad, provincial level}{}
+{}
 \cventry{Sep. 2019--June 2023\newline (expected)}
-        {Bowen Scholarship}{}
-        {30,000 RMB/Year (total 120,000 RMB), CUHK-Shenzhen}{}
-        {}
+{Bowen Scholarship}{}
+{30,000 RMB/year (total 120,000 RMB), CUHK-Shenzhen}{}
+{}
 \cventry{Sep. 2020}
-        {Academic Year 2019-20 Dean's List Award}{}
-        {School of Science and Engineering, CUHK-Shenzhen}{}
-        {}
+{Academic Year 2019-20 Dean's List Award}{}
+{School of Science and Engineering, CUHK-Shenzhen}{}
+{}
 \cventry{Sep. 2021}
-        {Academic Year 2020-21 Dean's List Award}{}
-        {School of Life and Health Sciences, CUHK-Shenzhen}{}
-        {}
+{Academic Year 2020-21 Dean's List Award}{}
+{School of Life and Health Sciences, CUHK-Shenzhen}{}
+{}
 \cventry{Sep. 2021}
-        {The Second prize}{}
-        {Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
-        {}
+{The Second prize}{}
+{Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
+{}
 % \cventry{Sep. 2022}
-%         {Academic Year 2021-22 Dean's List Award}{}
-%         {School of Life and Health Sciences, CUHK-Shenzhen}{}
-%         {}
+% {Academic Year 2021-22 Dean's List Award}{}
+% {School of Life and Health Sciences, CUHK-Shenzhen}{}
+% {}
 
 \cvsection{Language Skills}
-\cvline{}{Chinese (native), English (will have a TOEFL test in March), Japanese (elementary, only be able to read)}
+\cvline{}{Chinese (native), English, Japanese (elementary, only able to read)}
+
 
 % \section{Hobby}
 % \cvline{hobby 1}{\small Description}
 
 
 \end{document}
+
 
