@@ -6,10 +6,12 @@
 \usepackage{soul}
 \usepackage[version=3]{mhchem}
 \usepackage{fontspec}
+% \usepackage[T1]{fontenc}
 \usepackage{url}
 \usepackage{lipsum}
 % main font
 \usepackage{libertinus}
+% \usepackage[amsthm]{libertinust1math}
 % \usepackage{lmodern}
 % \usefonttheme{serif}
 \usepackage{inconsolata}
@@ -19,6 +21,11 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
+% \ul underline settings
+\setul{1pt}{}
+
+% tabular settings
+\setlength{\tabcolsep}{5pt}
 
 % % calibre font
 % \usepackage{fontspec}
@@ -45,7 +52,7 @@
 % \quote{The world opens itself before those with noble hearts.}
 
 % set width of cventry
-\settowidth{\hintscolumnwidth}{Sept. 2021--Dec. 2021}
+\settowidth{\hintscolumnwidth}{Sep. 2021--Dec. 2021\ }
 
 % re-define section as cvsection
 % \newcommand{\cvsection}[1]{\section{\textsc{#1}}}
@@ -61,12 +68,15 @@
 
 
 \cvsection{Education}
-\cventry{Sept. 2019--June 2023 (expected)}
+\cventry{Sep. 2019--Present}
     {B.Sc.}
     {}
     {Bioinformacis, Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
     {}
-    {Cumulative GPA: 3.671/4.000, rank 3/38; major GPA: 3.800/4.000, rank 1/38}
+    {\begin{tabular}{@{}lrr@{}}
+        \textbf{Cumulative GPA} & 3.671/4.000 & rank 3/38\\
+        \textbf{Major GPA} & 3.800/4.000 & rank 1/38\\
+    \end{tabular}}
     % {Major GPA: 3.800/4.000, rank 1/38; cumulative GPA: 3.671/4.000, rank 3/38}
 
 
@@ -82,120 +92,132 @@
 %     \end{tabular*}
 % }
 
+
+% \cvsection{Projects}
+% \cvline{Nov. 2021}{Parallel tempering of 1-D particle using Fortran}
+
+\cvsection{Research Experiences}
+\cventry{Apr. 2021--Present}
+    {Research assistant}{}
+    {Hajime Hirao's group}{CUHK-Shenzhen}
+    {}
+\cvline{Apr. 2021--June. 2021}{\small
+    \textbf{Training:} theoretical learning of quantum chemistry
+    \begin{itemize}[itemsep=4pt]
+        \item Learning \textit{Modern Quantum Chemistry}
+        \item SCF algorithm coding by Fortran
+        \begin{itemize}
+            \item RHF 6-31G \cee{H2} molecule
+            \item UHF 6-31G \cee{H_2^-} molecule
+        \end{itemize}
+        \item SCF acceleration by DIIS algorithm
+        \begin{itemize}
+            \item \ul{Fixed problematic DIIS algorithm} in original group code
+        \end{itemize}
+    \end{itemize}
+}
+\cvline{June 2021--Jul. 2021}{\small
+    \textbf{Training:} reaction pathway analysis--hydroxylation reaction between P450 Cpd I and propane
+    \begin{itemize}[itemsep=4pt]
+        \item Scan along the reaction path
+        \item Geometry optimization of intermediates
+        \item Calculation under different spin states
+        \item Writing scripts to extract information and generate report efficiently
+    \end{itemize}
+}
+\cvline{Aug. 2021--Dec. 2021}{\small
+    \textbf{Project:} reaction pathway analysis--P450 C-S bond formation by TleB (PDB ID: 6J83)
+    \begin{itemize}[itemsep=4pt]
+        % \setlength\itemsep{0.25em}
+        \item \ul{Design the whole research plan}
+        \item DFT calculation
+        \begin{itemize}
+            \item Build truncated model
+            \item DFT calculations along the proposed reaction pathway
+            \item Identify electronic configurations under different spin states
+            \item Swap electrons in \textsf{\textit{α}} or \textsf{\textit{β}} orbitals to get stable configuration
+        \end{itemize}
+        \item Molecular dynamics simulation of initial reaction complex
+        \begin{itemize}
+            \item Calculate MM parameters, correct protonated state, setup model
+            \item Perform MD simulations, check non-bonding interactions, check clusters in trajectory
+            \item MMPBSA free energy approximation to compare population between states
+        \end{itemize}
+        \item QM/MM
+        \begin{itemize}
+            \item Determine QM region of the system
+            \item Use MM parameters to build up QM/MM model
+        \end{itemize}
+    \end{itemize}
+}
+\cvline{April. 2022--Present}{\small
+    \textbf{Project:} EDA and NBO analysis of the nature of coordinate bond at the
+    heme iron center in cytochrome P450 inhibition
+    \begin{itemize}[itemsep=4pt]
+        \item Write an example Lewis configuration for NBO input
+        \item EDA analysis using Q-Chem
+        \begin{itemize}
+            \item Fix convergence problem by shutdown DIIS when error is small
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Jan. 2020--Dec. 2020}
+{Research assistant}{}
+{Hsien-da Huang's group}{CUHK-Shenzhen}
+{}
+\cvline{}{\small
+    \textbf{Project:} effects of traditional Chinese medicine in gene regulation:
+    identify DEGs using statistical methods
+    \begin{itemize}[itemsep=4pt]
+        \item Visualization of gene expression profile using PCA and t-SNE
+        \item Group tutorial about how to use Connectivity Map
+        \begin{itemize}
+            \item Exploring databases, submitting a query, interpreting statistics and heatmap
+        \end{itemize}
+        \item Gene set enrichment analysis (GSEA) for traditional Chinese medicines perturbed
+        gene expression profile to identify differentially expressed gene sets
+    \end{itemize}
+}
+
 \cvsection{Skills}
 % \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
-\cvline{Coding langs}{Python, Fortran, MATLAB, CUDA C++ and CUDA Fortran (elementary)}
+\cvline{Coding langs}{Python, Fortran, CUDA C++ and CUDA Fortran (elementary), MATLAB, \LaTeX}
 \cvline{Computer skills}{Linux (including system configuration, multi-user management, software
-compliation and installation), WSL, Git, \LaTeX}
+compliation and installation), WSL, Git}
 % \cvline{Scientific computing}{Numpy, MATLAB, MKL (elementary)}
 \cvline{Programming tools}{Vim, VSCode, Jupyter Lab, Windows Terminal}
 \cvline{Compt. chem. tools}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
 
+
 \cvsection{Teaching Experiences}
-\cventry{Sept. 2021--Dec. 2021}
+\cventry{Sep. 2021--Dec. 2021}
 {Undergraduate student teaching fellow (USTF)}{}
 {Computational Biology (BIM2005)}{CUHK-Shenzhen}
 {
     \begin{itemize}[itemsep=4pt]
         \item Create a slide about how to simplify the Schrödinger equation of hydrogen atom using
         atomic units
-        \item Tutorial session about how to use molecular docking tool Autodock-vina
-        \item Tutorial session to help the student review basic principles of quantum mechanics and quantum chemistry
-        \item Tutorial session about the mathematical background and hands-on Python implementation of principal component decomposition (PCA) algorithm
-        \item Hold office hours, homework grading, exam investigation
+        \item Tutorial session: molecular docking tool Autodock-vina
+        \item Tutorial session: review basic principles of quantum mechanics and quantum chemistry
+        \item Tutorial session: mathematical background and hands-on Python implementation of principal component decomposition (PCA) algorithm
+        \item Hold office hours, homework grading, exam invigilation
     \end{itemize}
 }
 
         
 \vspace{0.5em}
-\cventry{Jan. 2022--May 2022\newline (expected)}
+\cventry{Jan. 2022--May 2022\newline}
 {Undergraduate student teaching fellow (USTF)}{}
 {Organic Chemistry (BIO2003)}{CUHK-Shenzhen}
 {
     \begin{itemize}[itemsep=4pt]
-        \item Tutorial session about basic concepts and exercises of stereochemistry
-        \item Tutorial session about detailed mechanism of keto-enol tautomerism, aldol reaction,
+        \item Tutorial session: basic concepts and exercises of stereochemistry
+        \item Tutorial session: detailed mechanism of keto-enol tautomerism, aldol reaction,
         and Claisen condensation reaction, related exercises
-        \item Hold office hours, homework grading, exam investigation
+        \item Hold office hours, homework grading, exam invigilation
     \end{itemize}
 }
-
-
-
-% \cvsection{Projects}
-% \cvline{Nov. 2021}{Parallel tempering of 1-D particle using Fortran}
-
-\cvsection{Research Experiences}
-\cventry{Jan. 2020--Apr. 2021}
-{Research assistant}{}
-{Hsien-da Huang's research group}{Warshel Institute
-for Computational Biology, CUHK-Shenzhen
-}
-{}
-\cvline{}{\small
-    \textbf{Project:} exploring how traditional Chinese medicine affects gene regulation:
-    identify DEGs using statistical methods
-    \begin{itemize}[itemsep=4pt]
-        \item Performed visualization of gene expression profile using dimensionality reduction
-        algorithms: a linear scheme using PCA and a non-linear scheme using t-SNE
-        \item Delivered a group tutorial about how to use Connectivity Map: 
-        exploring databases, submitting a query, and understanding the statistics in
-        output heatmap
-        \item Performed gene set enrichment analysis (GSEA) for traditional Chinese medicines perturbed
-        gene expression profile to identify differentially expressed genes (DEGs)
-    \end{itemize}
-}
-
-
-\vspace{0.5em}
-\cventry{Apr. 2021--Present}
-    {Research assistant}{}
-    {Hajime Hirao's research group}{Warshel Institute
-    for Computational Biology, CUHK-Shenzhen}
-    {}
-\cvline{}{\small
-    \textbf{Project:} theoretical learning of quantum chemistry
-    \begin{itemize}[itemsep=4pt]
-        \item Learning quantum chemistry using \textit{Modern Quantum Chemistry}
-        by Attilia Szabo and Neil S.Outlund motivated of Prof. Hirao
-        \item Coding implementation of SCF algorithm using Fortran: RHF 6-31G \cee{H2} molecule and
-        UHF 6-31G \cee{H_2^-} molecule
-        \item Accelerating SCF algorithm by DIIS algorithm
-        \begin{itemize}
-            \item Fixed problematic DIIS algorithm in original group code
-        \end{itemize}
-    \end{itemize}
-}
-\cvline{}{\small
-    \textbf{Project:} reaction pathway analysis of hydroxylation reaction between P450 Cpd I and propane
-    \begin{itemize}[itemsep=4pt]
-        \item Performed scan along the reaction path and geometry optimization of intermediates
-        \item Performed calculation under different spin states
-        \item Writing python and shell script to extract information and generate instant report in
-        high-efficient way
-    \end{itemize}
-}
-\cvline{}{\small
-    \textbf{Project:} reaction pathway analysis of P450 C-S bond formation by TleB (PDB ID: 6J83)
-    \begin{itemize}[itemsep=4pt]
-        % \setlength\itemsep{0.25em}
-        \item Extracted Heme center and substrate, constructed a simplified model, 
-        and performed pure DFT calculations along the proposed reaction mechanism to get the first insight
-        of the reaction
-        \item Constructed QM/MM models, fit substrate MM parameters, performed ONIOM calculations
-        \item Performed molecular dynamics simulation to explore non-bonding interactions; compared
-        the free energy differences under different binding pose of substrate using MMPBSA method
-    \end{itemize}
-}
-\cvline{}{\small
-    \textbf{Project:} EDA and NBO analysis of the nature of coordination bonding at the
-    heme iron center in cytochrome P450 inhibition
-    \begin{itemize}[itemsep=4pt]
-        \item Determine the Lewis structures of P450 \cee{Fe^{2+}} and \cee{Fe^{3+}} species
-        \item Help to perform a part of EDA analysis
-    \end{itemize}
-}
-
 
 
 % \cvsection{Research Interests}
@@ -224,10 +246,29 @@ for Computational Biology, CUHK-Shenzhen
 {The Second prize}{}
 {Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
 {}
-% \cventry{Sep. 2022}
-% {Academic Year 2021-22 Dean's List Award}{}
-% {School of Life and Health Sciences, CUHK-Shenzhen}{}
-% {}
+
+\cvsection{Courses Taken}
+\cvline{Math \& stat}{
+    Calculus I and II, ordinary differential equations, linear algebra, advanced linear algebra,
+    probability and statistics I
+}
+\cvline{Chem \& physics}{
+    Mechanics, organic chemistry, physical chemistry I,
+    computational (structural) biology, computational biology laboratory, biophysics,
+    molecular simulation \& modeling I
+    (including statistical mechanics theories, monte carlo, MD simulation algorithms)
+}
+\cvline{Informatics}{
+    Introduction to computer science: programming methodology,
+    computational laboratory,
+    bioinformacis,
+    computational genomics and proteomics,
+    machine learning in computational biology,
+    design and analysis of bioinformacis algorithms
+}
+\cvline{Biology}{
+    Biochemistry, cell and molecular biology, genetics
+}
 
 \cvsection{Language Skills}
 \cvline{}{Chinese (native), English, Japanese (elementary, only able to read)}
