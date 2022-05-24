@@ -6,16 +6,17 @@
 \usepackage{soul}
 \usepackage[version=3]{mhchem}
 \usepackage{fontspec}
-% \usepackage[T1]{fontenc}
 \usepackage{url}
 \usepackage{lipsum}
 % main font
-\usepackage{libertinus}
+% \usepackage{libertinus}
 % \usepackage[amsthm]{libertinust1math}
-% \usepackage{lmodern}
+\usepackage{lmodern}
 % \usefonttheme{serif}
 \usepackage{inconsolata}
 \setmonofont{inconsolata}
+
+\newfontfamily\libert{Linux Libertine}
 
 % itemize
 \usepackage{enumitem}
@@ -39,8 +40,10 @@
 \moderncvtheme[blue]{classic}
 
 \recomputelengths
-\firstname{\rmfamily Haoran}
-\familyname{\rmfamily SUN}
+\firstname{\rmfamily \libert Haoran}
+\familyname{\rmfamily \libert SUN}
+% \firstname{Haoran}
+% \familyname{SUN}
 % \title{Undergraduate student}
 \address{2001 Longxiang Road}{Longgang District}{Shenzhen, China}
 \mobile{+86 139 1029 0104}
@@ -55,7 +58,7 @@
 \settowidth{\hintscolumnwidth}{Sep. 2021--Dec. 2021\ }
 
 % re-define section as cvsection
-% \newcommand{\cvsection}[1]{\section{\textsc{#1}}}
+% \newcommand{\cvsection}[1]{\section{\textsc{\rmfamily\libert #1}}}
 \newcommand{\cvsection}[1]{\section{{#1}}}
 \newcommand{\ntf}{\hl{\textbf{xxx}}}
 
@@ -112,7 +115,7 @@
         \end{itemize}
         \item SCF acceleration by DIIS algorithm
         \begin{itemize}
-            \item \ul{Fixed problematic DIIS algorithm} in original group code
+            \item \ul{Fixed problematic DIIS algorithm} in original group Fortran code
         \end{itemize}
     \end{itemize}
 }
@@ -202,7 +205,7 @@ compliation and installation), WSL, Git}
     \begin{itemize}[itemsep=4pt]
         \item Create a slide about how to simplify the Schrödinger equation of hydrogen atom using
         atomic units
-        \item Tutorial session: molecular docking tool Autodock-vina
+        \item Tutorial session: molecular docking tool Autodock-Vina
         \item Tutorial session: review basic principles of quantum mechanics and quantum chemistry
         \item Tutorial session: mathematical background and hands-on Python implementation of principal component decomposition (PCA) algorithm
         \item Hold office hours, homework grading, exam invigilation
