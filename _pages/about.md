@@ -10,7 +10,8 @@ redirect_from:
 Welcome to my homepage!
 
 ## Who am I
-I am an undergraduate student majoring in bioinformatics at CUHK-Shenzhen expected to graduate in 2023.
+Please refer to my [cv]({{ site.baseurl}}/cv/cv.pdf).
+<!-- I am an undergraduate student majoring in bioinformatics at CUHK-Shenzhen expected to graduate in 2023.
 
 ## Seeking positions!
 With a strong interest in the nature of physics and chemistry, I am seeking a postgraduate degree in computational chemistry/biology currently.
@@ -23,7 +24,7 @@ Although I hardly took any CS-related courses during undergraduate study, benefi
 ## Interest
 * Computational chemistry methods and applications
 * Statistical mechanics theories and related algorithms
-* Statistical learning algorithms applied on computational chemistry/biology study
+* Statistical learning algorithms applied on computational chemistry/biology study -->
 
 ## Hobby & life
 You may visit [my blog site](https://zein0115.github.io).
