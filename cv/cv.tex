@@ -105,8 +105,8 @@ leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
     {Bioinformacis, Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
     {}
     {\begin{tabular}{@{}lrr@{}}
-        \textbf{Cumulative GPA} & 3.706/4.000 & rank 1/38\\
-        \textbf{Major GPA} & 3.817/4.000 & rank 1/38\\
+        \textbf{Cumulative GPA} & 3.716/4.000 & rank 1/38\\
+        \textbf{Major GPA} & 3.831/4.000 & rank 1/38\\
     \end{tabular}}
 \cventry{June 2022--Aug. 2022}
     {Summer visiting program}
@@ -136,12 +136,12 @@ leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
 \cvsection{Skills}
 % \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
 % \cvline{}{\textit{Remark:} Github repositories may be a reference for those skills}
-\cvline{Coding langs}{Python, Fortran, CUDA C++ and CUDA Fortran (elementary), MATLAB, \LaTeX}
+\cvline{Coding langs}{Python, Fortran, C, CUDA C++ and CUDA Fortran (elementary), MATLAB, \LaTeX}
 \cvline{Computer skills}{Linux (including system configuration, multi-user management, software
 compliation and installation), WSL, Git}
 % \cvline{Scientific computing}{Numpy, MATLAB, MKL (elementary)}
 \cvline{Programming tools}{Vim, VSCode, Jupyter Lab, Windows Terminal}
-\cvline{Compt. chem. tools}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
+\cvline{Scientific softs}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
 
 
 \cvsection{Teaching Experiences}
@@ -194,29 +194,29 @@ compliation and installation), WSL, Git}
 {Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
 {}
 
-\cvsection{Courses Taken}
-\cvline{Math \& stat}{
-    Calculus I \& II, introduction to real analysis, numerical analysis,
-    ordinary differential equations, linear algebra, advanced linear algebra,
-    probability and statistics I
-}
-\cvline{Chem \& physics}{
-    Mechanics, general chemistry, organic chemistry, physical chemistry I,
-    computational (structural) biology, computational biology laboratory, biophysics,
-    molecular simulation \& modeling I
-    (including statistical mechanics theories, monte carlo, MD simulation algorithms)
-}
-\cvline{Informatics}{
-    Introduction to computer science: programming methodology,
-    computational laboratory,
-    bioinformacis,
-    computational genomics and proteomics,
-    machine learning in computational biology,
-    design and analysis of bioinformacis algorithms
-}
-\cvline{Biology}{
-    General biology, biochemistry, cell and molecular biology, genetics
-}
+% \cvsection{Courses Taken}
+% \cvline{Math \& stat}{
+%     Calculus I \& II, introduction to real analysis, numerical analysis,
+%     ordinary differential equations, linear algebra, advanced linear algebra,
+%     probability and statistics I
+% }
+% \cvline{Chem \& physics}{
+%     Mechanics, general chemistry, organic chemistry, physical chemistry I,
+%     computational (structural) biology, computational biology laboratory, biophysics,
+%     molecular simulation \& modeling I
+%     (including statistical mechanics theories, monte carlo, MD simulation algorithms)
+% }
+% \cvline{Informatics}{
+%     Introduction to computer science: programming methodology,
+%     computational laboratory,
+%     bioinformacis,
+%     computational genomics and proteomics,
+%     machine learning in computational biology,
+%     design and analysis of bioinformacis algorithms
+% }
+% \cvline{Biology}{
+%     General biology, biochemistry, cell and molecular biology, genetics
+% }
 
 \cvsection{Research Experiences}
 \cventry{Apr. 2021--Present}
@@ -224,7 +224,7 @@ compliation and installation), WSL, Git}
     {Hajime Hirao's group}{CUHK-Shenzhen}
     {}
 \cvline{Apr. 2021--June 2021}{\small
-    \textbf{Training:} theoretical learning of quantum chemistry by \textit{Modern Quantum Chemistry}
+    \textbf{Training:} theoretical studying of quantum chemistry by \textit{Modern Quantum Chemistry}
     \begin{itemize}[itemsep=2pt]
         \item SCF algorithm coding by Fortran, including RHF 6-31G \cee{H2} molecule
         and UHF 6-31G \cee{H_2^-} molecule
@@ -246,18 +246,20 @@ compliation and installation), WSL, Git}
     \textbf{Project:} reaction pathway analysis--P450 C-S bond formation by TleB (PDB ID: 6J83)
     \begin{itemize}[itemsep=4pt]
         % \setlength\itemsep{0.25em}
-        \item \ul{Design the whole research plan}
-        \item Build truncated model to perform DFT calculations along the proposed reaction pathway,
+        % \item \ul{Design the whole research plan}
+        \item Build truncated model to perform DFT calculations along the proposed reaction pathway to
         identify electronic configurations under different spin states
             % \item Swap electrons in $\alpha$ or $\beta$ orbitals to get stable configuration
         \item Molecular dynamics simulation of initial reaction complex
+        to determine the starting path of the reaction
         \begin{itemize}
             \item Deriving MM parameters, setup system, perform MD simulations, check non-bonding interactions, check clusters in trajectory by
             statistical algorithms, found minor sub-states by clustering algorithm
-            \item MMPBSA free energy approximation to compare population between states, find one mode energetically
-            more stable
+            \item MMPBSA free energy approximation to compare population between states,
+            in order to find which binding pose is more favorable for protein
         \end{itemize}
-        \item QM/MM
+        \item Using quantum mechanics + molecular mechanics (QM/MM) hybrid method to
+        investigate into the protein-substrate interaction
         \begin{itemize}
             \item Determine QM region of the system, use MM parameters to build up QM/MM model
             \item Use small basis set when performing optimization, then use large basis set and
@@ -269,10 +271,12 @@ compliation and installation), WSL, Git}
 \vspace{-1em}
 \cvline{Apr. 2022--Present}{\small
     \textbf{Project:} energy decomposition analysis (EDA) and natural bonding orbital (NBO) analysis of
-    the nature of coordinate bond at the heme iron center in cytochrome P450 inhibition
+    the nature of protein-drug interaction at the heme iron center in cytochrome P450 inhibition
     \begin{itemize}[itemsep=2pt]
         \item Write an example Lewis configuration for NBO input
         \item Performed batch EDA analysis using Q-Chem, fix convergence problem by shutdown DIIS when error is small
+        \item The research could provide insight into inhibition drug design
+        for P450
     \end{itemize}
 }
 
@@ -285,6 +289,7 @@ compliation and installation), WSL, Git}
     identify DEGs using statistical methods
     \begin{itemize}[itemsep=4pt]
         \item Visualization of gene expression profile using PCA and t-SNE
+        to get a first sight of data's distribution
         \item Group tutorial about how to use Connectivity Map
         \begin{itemize}
             \item Exploring databases, submitting a query, interpreting statistics and heatmap
