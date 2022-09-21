@@ -26,6 +26,7 @@ Then, one way to prove a hamiltonian system $H(\mathbf{q}, \dot{\mathbf{q}}, t)$
 $$
   \dot{\mathbf{q}} = A(\mathbf{q}-\mathbf{q}_0) + O(\|\mathbf{q}-\mathbf{q}_0\|^2)
 $$
+
 cannot have all its eigenvalues negative/have negative real part.
 
 The case for the limit cycle would be much more complicated, but the idea is similar.
