@@ -34,14 +34,38 @@ Then the equation could be written in the form of
 \\[
   \dot{\mathbf{x}} = 
   \begin{bmatrix}
-  \dot{q}_1\\\\ \cdots\\ \dot{q}_n \\ \dot{p}_1\\ \cdots \\ \dot{p}_n
+  \dot{q}_1\\\\\\ \cdots\\\\ \dot{q}_n \\\\ \dot{p}_1\\\\ \cdots \\\\ \dot{p}_n
   \end{bmatrix}
   = \begin{bmatrix}
-    \frac{\partial H}{\partial p_1}\\ \cdots\\
-    \frac{\partial H}{\partial p_n}\\ 
-    -\frac{\partial H}{\partial q_1}\\ \cdots\\
+    \frac{\partial H}{\partial p_1}\\\\ \cdots\\\\
+    \frac{\partial H}{\partial p_n}\\\\ 
+    -\frac{\partial H}{\partial q_1}\\\\ \cdots\\\\
     -\frac{\partial H}{\partial q_n}
+  \end{bmatrix} = f(\mathbf{x})
+\\]
+A equals to the first order derivative of $f(\mathbf{x})$
+\\[
+  A(\mathbf{q}, \mathbf{p}, t) &= \frac{\partial f(\mathbf{x})}{\partial\mathbf{x}} = 
+  \begin{bmatrix}
+    \frac{\partial}{\partial \mathbf{q}} & 
+    \frac{\partial}{\partial \mathbf{p}}
   \end{bmatrix}
+  \begin{bmatrix}
+    -\frac{\partial}{\partial \mathbf{p}}\\\\ 
+    -\frac{\partial}{\partial \mathbf{q}}
+  \end{bmatrix}
+  = \begin{bmatrix}
+    \frac{\partial^2 H}{\partial\mathbf{q}\partial\mathbf{p}} & 
+    \frac{\partial^2 H}{\partial\mathbf{p}\partial\mathbf{p}} \\\\
+    -\frac{\partial^2 H}{\partial\mathbf{p}\partial\mathbf{q}} & 
+    -\frac{\partial^2 H}{\partial\mathbf{q}\partial\mathbf{q}}
+  \end{bmatrix}
+\\]
+Then we can verity that the trace of $A$ is $0$, which means it is not possible for any Hamiltonian system to have an asymptotically stable equilibrium position.
+\\[
+  \mathrm{tr} A(\mathbf{q}, \mathbf{p}, t) = 
+  \sum_{i}\frac{\partial^2 H}{\partial q_i\partial p_i} -
+          \frac{\partial^2 H}{\partial p_i\partial q_i} = 0
 \\]
 
 
