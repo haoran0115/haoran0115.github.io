@@ -12,7 +12,7 @@ $$
 \dot{\mathbf{x}} = f(\mathbf{x})
 $$
 
-In a neighborhood around an asymptotically stable equilibrium position, \\(mathbf{x}_0\\), the equation could be
+In a neighborhood around an asymptotically stable equilibrium position, \\(\mathbf{x}_0\\), the equation could be
 written in expansion
 
 $$
