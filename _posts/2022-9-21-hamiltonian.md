@@ -1,5 +1,5 @@
 ---
-title: 'An interesting property of Hamitonian system'
+title: 'An interesting property of Hamiltonian system'
 tags:
   - Classical mechanics
   - Differential equations
@@ -13,21 +13,21 @@ $$
 \dot{\mathbf{x}} = f(\mathbf{x})
 $$
 
-In a neighborhood around an asymptotically stable equilibrium position $\mathbf{x}_0$, the equation could be
+In a neighborhood around an asymptotically stable equilibrium position, $\mathbf{x}_0$, the equation could be
 written in expansion
 
 $$
 \dot{\mathbf{x}} = A(\mathbf{x}-\mathbf{x}_0) + O(\|\mathbf{x}-\mathbf{x}_0\|^2)
 $$
 
-where the matrix $A$ with all eigenvalue negative, and $O$ is the remainder (which is much small when $\|\mathbf{x}-\mathbf{x}_0\|$ is small).
+where the matrix $A$ with all eigenvalue negative and $O$ is the remainder (which is much small when $\|\mathbf{x}-\mathbf{x}_0\|$ is small).
 Then, one way to prove a hamiltonian system $H(\mathbf{q}, \dot{\mathbf{q}}, t)$ cannot have any asymptotically stable limit point is to show that the matrix $A$ for the equation
 
 $$
   \dot{\mathbf{q}} = A(\mathbf{q}-\mathbf{q}_0) + O(\|\mathbf{q}-\mathbf{q}_0\|^2)
 $$
 
-cannot have all its eigenvalues negative/have negative real part.
+cannot have all its eigenvalues negative/have a negative real part.
 
 The case for the limit cycle would be much more complicated, but the idea is similar.
 
@@ -75,7 +75,7 @@ $$
   \end{bmatrix}
 $$
 
-Then we can verity that the trace of $A$ is $0$, which means it is not possible for any Hamiltonian system to have an asymptotically stable equilibrium position.
+Then we can verity the trace of $A$ is $0$, which means no Hamiltonian system can have an asymptotically stable equilibrium position.
 
 $$
   \mathrm{tr} A(\mathbf{q}, \mathbf{p}, t) = 
