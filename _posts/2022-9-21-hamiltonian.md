@@ -34,18 +34,18 @@ Then the equation could be written in the form of
 \\[
   \dot{\mathbf{x}} = 
   \begin{bmatrix}
-  \dot{q}_1\\\\\\ \vdots\\\\ \dot{q}_n \\\\ \dot{p}_1\\\\ \vdots \\\\ \dot{p}_n
+  \dot{q}_1 \\\\ \vdots\\\\ \dot{q}_n \\\\ \dot{p}_1\\\\ \vdots \\\\ \dot{p}_n
   \end{bmatrix}
   = \begin{bmatrix}
-    \frac{\partial H}{\partial p_1}\\\\ 
+    \frac{\partial H}{\partial p_1} \\\\ 
     \vdots \\\\
-    \frac{\partial H}{\partial p_n}\\\\ 
-    -\frac{\partial H}{\partial q_1}\\\\ 
+    \frac{\partial H}{\partial p_n} \\\\ 
+    -\frac{\partial H}{\partial q_1} \\\\ 
     \vdots \\\\
     -\frac{\partial H}{\partial q_n}
   \end{bmatrix} = f(\mathbf{x})
 \\]
-A equals to the first order derivative of $f(\mathbf{x})$
+$A$ equals to the first order derivative of $f(\mathbf{x})$
 $$
   A(\mathbf{q}, \mathbf{p}, t) = \frac{\partial f(\mathbf{x})}{\partial\mathbf{x}} = 
   \begin{bmatrix}
