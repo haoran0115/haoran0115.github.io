@@ -34,10 +34,13 @@ Then the equation could be written in the form of
 \\[
   \dot{\mathbf{x}} = 
   \begin{bmatrix}
-  \dot{q}_1\\ \cdots\\ \dot{q}_n \\ \dot{p}_1\\ \cdots \\ \dot{p}_n
+  \dot{q}_1\\\\ \cdots\\ \dot{q}_n \\ \dot{p}_1\\ \cdots \\ \dot{p}_n
   \end{bmatrix}
   = \begin{bmatrix}
-    \frac{\partial H}{\partial p_i}
+    \frac{\partial H}{\partial p_1}\\ \cdots\\
+    \frac{\partial H}{\partial p_n}\\ 
+    -\frac{\partial H}{\partial q_1}\\ \cdots\\
+    -\frac{\partial H}{\partial q_n}
   \end{bmatrix}
 \\]
 
