@@ -6,13 +6,13 @@ tags:
 ---
 > Problem. Show that in an hamiltonian system it is impossible to have asymptotically stable equilibrium positions and asymptotically stable limit cycles in the phase space.[^fn]
 
-*Ideas:* first consider a system of ODEs
+*Ideas:* first, consider a system of ODEs
 
 $$
 \dot{\mathbf{x}} = f(\mathbf{x})
 $$
 
-In a neighborhood around an asymptotically stable equilibrium position, \$\mathbf{x}_0\$, the equation could be
+In a neighborhood around an asymptotically stable equilibrium position, \\(mathbf{x}_0\\), the equation could be
 written in expansion
 
 $$
@@ -74,7 +74,7 @@ $$
   \end{bmatrix}
 $$
 
-Then we can verity the trace of $A$ is $0$, which means no Hamiltonian system can have an asymptotically stable equilibrium position.
+Then we can verify that the trace of $A$ is $0$, which means no Hamiltonian system can have an asymptotically stable equilibrium position.
 
 $$
   \mathrm{tr}\ A(\mathbf{q}, \mathbf{p}, t) = 
