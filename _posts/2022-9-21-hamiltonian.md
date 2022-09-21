@@ -4,8 +4,7 @@ tags:
   - Classical mechanics
   - Differential equations
 ---
-An interesting problem appeared in a book about classical mechanics.[^fn]
-> Problem. Show that in an hamiltonian system it is impossible to have asymptotically stable equilibrium positions and asymptotically stable limit cycles in the phase space.
+> Problem. Show that in an hamiltonian system it is impossible to have asymptotically stable equilibrium positions and asymptotically stable limit cycles in the phase space.[^fn]
 
 *Ideas:* first consider a system of ODEs
 
@@ -13,7 +12,7 @@ $$
 \dot{\mathbf{x}} = f(\mathbf{x})
 $$
 
-In a neighborhood around an asymptotically stable equilibrium position, $\mathbf{x}_0$, the equation could be
+In a neighborhood around an asymptotically stable equilibrium position, \$\mathbf{x}_0\$, the equation could be
 written in expansion
 
 $$
@@ -78,7 +77,7 @@ $$
 Then we can verity the trace of $A$ is $0$, which means no Hamiltonian system can have an asymptotically stable equilibrium position.
 
 $$
-  \mathrm{tr} A(\mathbf{q}, \mathbf{p}, t) = 
+  \mathrm{tr}\ A(\mathbf{q}, \mathbf{p}, t) = 
   \sum_{i}\frac{\partial^2 H}{\partial q_i\partial p_i} -
           \frac{\partial^2 H}{\partial p_i\partial q_i} = 0
 $$
