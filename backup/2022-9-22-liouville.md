@@ -5,7 +5,7 @@ tags:
 ---
 > Problem. Prove Liouville's formula $$W=W_0 e^{\int \mathrm{tr}\ A dt}$$ for the Wronskian determinant of the linear system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$.
 
-<!-- *Proof.* Let $$\mathbf{x}(t)\in\mathbb{R}^n$$ and $$A(t)\in\mathbb{R}^{n\times n}$$. The solution to the system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$ is in the following form.
+*Proof.* Let $$\mathbf{x}(t)\in\mathbb{R}^n$$ and $$A(t)\in\mathbb{R}^{n\times n}$$. The solution to the system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$ is in the following form.
 
 $$
 \mathbf{x}(t) = e^{\int_0^t A(s)\ ds}\mathbf{x}(0)
@@ -55,5 +55,5 @@ By the claim we just proved, one can show that $$\det W(t) = e^{\int_0^t \mathrm
 $$
 \det W(t) = \det W(t) =  e^{\mathrm{tr}\int_0^t A(s)\ ds} \cdot \det W(0)
 =  e^{\int_0^t \mathrm{tr}\ A(s)\ ds} \cdot \det W(0)
-$$ -->
+$$
 
