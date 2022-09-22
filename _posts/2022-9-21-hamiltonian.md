@@ -33,7 +33,7 @@ The case for the limit cycle would be much more complicated, but the idea is sim
 
 $$
 \dot{q}_i = \frac{\partial H}{\partial p_i},~
-  \dot{p}_i = -\frac{\partial H}{\partial p_i}
+  \dot{p}_i = -\frac{\partial H}{\partial q_i}
 $$
 
 Then we could rewrite the equation in the form of
