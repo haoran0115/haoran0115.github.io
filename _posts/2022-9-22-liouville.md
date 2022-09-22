@@ -1,5 +1,5 @@
 ---
-title: "Liouville's formula"
+title: "Liouville formula"
 tags:
   - Differential equations
 ---
