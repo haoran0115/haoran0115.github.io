@@ -61,7 +61,7 @@ Note that $$A$$ equals to the first order derivative of $$f(\mathbf{x})$$
 $$
 A(\mathbf{q}, \mathbf{p}, t) = \frac{\partial f(\mathbf{x})}{\partial\mathbf{x}} = 
   \frac{\partial}{\partial\begin{bmatrix}
-    \mathbf{q} & 
+    \mathbf{q}\\
     \mathbf{p}
   \end{bmatrix}}
   \begin{bmatrix}
