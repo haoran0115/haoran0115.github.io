@@ -1,9 +1,9 @@
 ---
-title: Liouville formula
+title: 'Liouville\'s formula'
 tags:
   - Differential equations
 ---
-> Problem. Prove Liouville's formula $$W=W_0 e^{\int \mathrm{tr}~ A dt}$$ for the Wronskian determinant of the linear system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$.
+> Problem. Prove Liouville\'s formula $$W=W_0 e^{\int \mathrm{tr}~ A dt}$$ for the Wronskian determinant of the linear system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$.
 
 *Proof.* Let $$\mathbf{x}(t)\in\mathbb{R}^n$$ and $$A(t)\in\mathbb{R}^{n\times n}$$. The solution to the system $$\dot{\mathbf{x}} = A(t)\mathbf{x}$$ is in the following form.
 
