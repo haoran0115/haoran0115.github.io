@@ -12,21 +12,20 @@ $$
 \dot{\mathbf{x}} = f(\mathbf{x})
 $$
 
-In a neighborhood around an asymptotically stable equilibrium position, $$\mathbf{x}_0$$, the equation could be
-written in expansion
+In a neighborhood around an asymptotically stable equilibrium position, $$\mathbf{x}_0$$, the equation could be written in expansion
 
 $$
 \dot{\mathbf{x}} = A(\mathbf{x}-\mathbf{x}_0) + O(\|\mathbf{x}-\mathbf{x}_0\|^2)
 $$
 
 where the matrix $$A$$ with all eigenvalue negative and $$O$$ is the remainder (which is much small when $$\|\mathbf{x}-\mathbf{x}_0\|$$ is small).
-Then, one way to prove a hamiltonian system $$H(\mathbf{q}, \dot{\mathbf{q}}, t)$$ cannot have any asymptotically stable limit point is to show that the matrix $$A$$ for the equation
+Then, one way to prove a hamiltonian system $$H(\mathbf{q}, \dot{\mathbf{q}}, t)$$ cannot have any asymptotically stable limit point is to show that the matrix $$A$$ for the following equation cannot have all its eigenvalues be negative or have negative real parts.
 
 $$
 \dot{\mathbf{q}} = A(\mathbf{q}-\mathbf{q}_0) + O(\|\mathbf{q}-\mathbf{q}_0\|^2)
 $$
 
-cannot have all its eigenvalues be negative or have negative real parts.
+
 
 The case for the limit cycle would be much more complicated, but the idea is similar.
 
@@ -37,7 +36,7 @@ $$
   \dot{p}_i = -\frac{\partial H}{\partial p_i}
 $$
 
-Then the equation could be written in the form of
+Then we could rewrite the equation in the form of
 
 $$
 \dot{\mathbf{x}} = 
