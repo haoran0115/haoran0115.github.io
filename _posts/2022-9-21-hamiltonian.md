@@ -42,14 +42,14 @@ Then the equation could be written in the form of
 $$
 \dot{\mathbf{x}} = 
   \begin{bmatrix}
-  \dot{q}_1 \\\\ \vdots\\\\ \dot{q}_n \\\\ \dot{p}_1\\\\ \vdots \\\\ \dot{p}_n
+  \dot{q}_1 \\ \vdots\\ \dot{q}_n \\ \dot{p}_1\\ \vdots \\ \dot{p}_n
   \end{bmatrix}
   = \begin{bmatrix}
-    \frac{\partial H}{\partial p_1} \\\\ 
-    \vdots \\\\
-    \frac{\partial H}{\partial p_n} \\\\ 
-    -\frac{\partial H}{\partial q_1} \\\\ 
-    \vdots \\\\
+    \frac{\partial H}{\partial p_1} \\ 
+    \vdots \\
+    \frac{\partial H}{\partial p_n} \\ 
+    -\frac{\partial H}{\partial q_1} \\ 
+    \vdots \\
     -\frac{\partial H}{\partial q_n}
   \end{bmatrix} = f(\mathbf{x})
 $$
@@ -65,12 +65,12 @@ A(\mathbf{q}, \mathbf{p}, t) = \frac{\partial f(\mathbf{x})}{\partial\mathbf{x}}
     \mathbf{p}
   \end{bmatrix}}
   \begin{bmatrix}
-    \frac{\partial H}{\partial \mathbf{p}}\\\\ 
+    \frac{\partial H}{\partial \mathbf{p}}\\ 
     -\frac{\partial H}{\partial \mathbf{q}}
   \end{bmatrix}
   = \begin{bmatrix}
     \frac{\partial^2 H}{\partial\mathbf{q}\partial\mathbf{p}} & 
-    \frac{\partial^2 H}{\partial\mathbf{p}\partial\mathbf{p}} \\\\
+    \frac{\partial^2 H}{\partial\mathbf{p}\partial\mathbf{p}} \\
     -\frac{\partial^2 H}{\partial\mathbf{q}\partial\mathbf{q}} & 
     -\frac{\partial^2 H}{\partial\mathbf{p}\partial\mathbf{q}}
   \end{bmatrix}
