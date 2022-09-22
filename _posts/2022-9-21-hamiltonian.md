@@ -19,7 +19,7 @@ $$
 \dot{\mathbf{x}} = A(\mathbf{x}-\mathbf{x}_0) + O(\|\mathbf{x}-\mathbf{x}_0\|^2)
 $$
 
-where the matrix $A$ with all eigenvalue negative and $$O$$ is the remainder (which is much small when $$\|\mathbf{x}-\mathbf{x}_0\|$$ is small).
+where the matrix $$A$$ with all eigenvalue negative and $$O$$ is the remainder (which is much small when $$\|\mathbf{x}-\mathbf{x}_0\|$$ is small).
 Then, one way to prove a hamiltonian system $$H(\mathbf{q}, \dot{\mathbf{q}}, t)$$ cannot have any asymptotically stable limit point is to show that the matrix $$A$$ for the equation
 
 $$

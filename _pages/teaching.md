@@ -5,7 +5,7 @@ permalink: /teaching/
 author_profile: true
 ---
 
-I am willing to teach students about every detail in theories and algorithms, and try to let them understand difficult knowledge in the most intuitive way.
+I am willing to teach students about every detail in theories and algorithms and try to let them understand complex knowledge most intuitively.
 
 ## 2021
 * Sept. 2021–Dec. 2021, **undergraduate student teaching fellow (USTF)**, Computation Biology (BIM2005), CUHK-Shenzhen, 4 tutorial sessions.
