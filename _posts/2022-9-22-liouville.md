@@ -28,7 +28,7 @@ Therefore $$\det W(t) = \det e^{\int_0^t A(s)\ ds}\det W(0)$$.
 
 *Claim.* $$\det e^A = e^{\mathrm{tr}\ A}$$
 
-> *Proof of Claim.* Decompose $$A=UTU^{-1}$$, where $$T$$ is an upper triangular matrix. Then we can > show that $$\det e^{B}=e^{T}$$ by the following derivation.
+> *Proof of Claim.* Decompose $$A=UTU^{-1}$$, where $$T$$ is an upper triangular matrix. Then we can show that $$\det e^{B}=e^{T}$$ by the following derivation.
 > 
 > $$
 \begin{aligned}

@@ -1,6 +1,12 @@
 # Academic page
 Forked from https://github.com/academicpages/academicpages.github.io
 
+## Install Bundler
+Using conda to install bundler.
+```
+conda install -c conda-forge ruby
+```
+
 ## Run locally
 ```
 bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
