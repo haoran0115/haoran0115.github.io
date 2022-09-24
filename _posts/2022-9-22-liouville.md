@@ -11,7 +11,7 @@ $$
 \mathbf{x}(t) = e^{\int_0^t A(s)\ ds}\mathbf{x}(0)
 $$
 
-Since $$e^{\int_0^t A(s)\ ds}$$ is invertible, there would have $n$ linearly independent solutions $\mathbf{x}_1,\dots,\mathbf{x}_n$. Hence, we can write the Wronskian in the following form.
+Since $$e^{\int_0^t A(s)\ ds}$$ is invertible, there would have $$n$$ linearly independent solutions $$\mathbf{x}_1,\dots,\mathbf{x}_n$$. Hence, we can write the Wronskian in the following form.
 
 $$
 W(t) = \begin{bmatrix}
