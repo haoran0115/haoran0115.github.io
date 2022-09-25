@@ -9,7 +9,9 @@ conda install -c conda-forge ruby
 
 ## Run locally
 ```
-bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
+# run '. ~/.proxy' if needed
+# run 'bundle add webrick' if jekyll not working
+bundle exec jekyll liveserve --config _config.yml,_config.dev.yml --port=10000
 ```
 
 Script
@@ -17,7 +19,7 @@ Script
 # preview.sh
 #!/usr/bin/bash
 rm -r ./_site
-bundle exec jekyll liveserve --config _config.yml,_config.dev.yml
+bundle exec jekyll liveserve --config _config.yml,_config.dev.yml --port=10000
 ```
 
 ## Notes
