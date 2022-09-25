@@ -41,17 +41,16 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
 <script type="text/x-mathjax-config">
   MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
       displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
     },
-    svg: {
-      fontCache: 'global'
-    }
+    processEscapes: true,
+    processEnvironments: true
   };
 </script>
 <script type="text/javascript"
-   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js">
+   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
 <!-- katex js -->
