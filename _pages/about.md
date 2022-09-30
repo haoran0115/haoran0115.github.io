@@ -12,7 +12,7 @@ Welcome to my homepage!
 ## Who am I
 Please refer to my [cv]({{ site.baseurl}}/cv/cv.pdf).
 
-## Hobby & life
-You may visit [my blog site](https://zein0115.github.io).
+<!-- ## Hobby & life
+You may visit [my blog site](https://zein0115.github.io). -->
 
 
