@@ -3,6 +3,7 @@ title: 'An interesting property of Hamiltonian system'
 tags:
   - Classical mechanics
   - Differential equations
+  - Physics
 ---
 > Problem. Show that in an hamiltonian system it is impossible to have asymptotically stable equilibrium positions and asymptotically stable limit cycles in the phase space.[^fn]
 
