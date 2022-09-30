@@ -32,10 +32,10 @@ One application of this conclusion is provided as the following problem.
 > Problem. Please describe the relationship between the probability and energy of state in NVT ensemble for a system contains $N$ one-dimensional harmonic oscillators.
 
 
-*Solution.* Since the partition function for $N$ one-dimensional harmonic oscillators under the NVE ensemble is in the form of $\Omega(N, E)=f(N)E^{3N-1}$. Therefore, under the NVT ensemble, we would have
+*Solution.* Since the partition function for $N$ one-dimensional harmonic oscillators under the NVE ensemble is in the form of $\Omega(N, E)=f(N)E^{N-1}$. Therefore, under the NVT ensemble, we would have
 
 $$
-P(E)\propto \Omega(N,E)e^{-\beta E} \propto E^{3N-1}e^{-\beta E}
+P(E)\propto \Omega(N,E)e^{-\beta E} \propto E^{N-1}e^{-\beta E}
 $$
 
 
