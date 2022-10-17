@@ -20,7 +20,7 @@ $$
 \begin{split}
     P(E) &= \int_{\mathcal{H}(x)=E}\mathrm{d}\mathbf{x}\ f(\mathbf{x})\\
     &= \int\mathrm{d}\mathbf{x}\ f(\mathbf{x})\delta(\mathcal{H}(\mathbf{x})-E)\\
-    &= \int\mathrm{d}\mathbf{x}\frac{e^{-\beta\mathcal{H}(\mathbf{x})}}{Q(N,V,T)}\delta(\mathcal{H}(\mathbf{x})-E)\\
+    &= \int\mathrm{d}\mathbf{x}\ \frac{e^{-\beta\mathcal{H}(\mathbf{x})}}{Q(N,V,T)}\delta(\mathcal{H}(\mathbf{x})-E)\\
     &= \int\mathrm{d}\mathbf{x}\ \frac{e^{-\beta E}}{Q(N,V,T)}\delta(\mathcal{H}(\mathbf{x})-E)\\
     &= \frac{e^{-\beta E}}{Q(N,V,T)}\int\mathrm{d}\mathbf{x}\ \delta(\mathcal{H}(\mathbf{x})-E)\\
     &= \frac{\Omega(N,V,E)}{Q(N,V,T)}e^{-\beta E}

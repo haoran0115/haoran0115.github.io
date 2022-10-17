@@ -62,7 +62,7 @@
 leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
 
 % theme
-\moderncvtheme[blue]{classic}
+\moderncvtheme[black]{classic}
 
 \recomputelengths
 \firstname{\rmfamily \libert Haoran}
@@ -105,64 +105,99 @@ leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
     {Bioinformacis, Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
     {}
     {\begin{tabular}{@{}lrlr@{}}
-        \textbf{GPA, cumulative} & 3.716/4.000 & \textbf{rank} & 1/39\\
-        \textbf{GPA, major} & 3.831/4.000      & \textbf{rank} & 1/39
-    \end{tabular}}
+        \textbf{GPA, cumulative} & 3.716/4.000 & \textbf{rank} & 1/38\\
+        \textbf{GPA, major} & 3.831/4.000      & \textbf{rank} & 1/38
+    \end{tabular}\\
+    \footnotesize Courses: Computational Biology, Design and Analysis of Bioinformacis Algorithms,
+    Machine Learning in Computational Biology, Biophysical Chemistry, Biophysics,
+    Molecular Simulation and Modeling I, Ordinary Differential Equations, Advanced Linear Algebra,
+    Parallel Programming, Partial Differential Equations, Advanced Quantum Mechanics, etc.}
 \cventry{June 2022--Aug. 2022}
     {Summer visiting program}
     {}
     {University of California, Berkeley (UCB)}
     {}
-    {Courses taken: MATH104 introduction to real analysis,
-    MATH128A numerical analysis, CS61C machine structure\\
-    \begin{tabular}{@{}lrr@{}}
+    {\begin{tabular}{@{}lrr@{}}
         \textbf{GPA} & 4.000/4.000 &  \\
-    \end{tabular}}
+    \end{tabular}\\
+    \footnotesize Courses: MATH104 introduction to real analysis,
+    MATH128A numerical analysis, CS61C machine structure\\}
 
 
-% \cvline{}{\footnotesize
-%     \begin{tabular*}{0.78\textwidth}{@{\extracolsep{\fill}}cccc}
-%         \toprule
-%         Calculus I & Calculus II & \makecell[c]{General\\Chemistry} & \makecell[c]{Programming\\Methodology} \\ \midrule
-%         3.70/4.00 & 4.00/4.00 & 4.00/4.00 & 4.00/4.00 \\ 
-%         \toprule\\
-%         \toprule
-%         \makecell[c]{Computational\\Biology} & Biochem. & \makecell[c]{Linear\\Algebra} & \makecell[c]{Prob. and\\Stats. Inference} \\ \midrule
-%         4.00/4.00 & 3.70/4.00 & 4.00/4.00 & 4.00/4.00 \\ \bottomrule
-%     \end{tabular*}
-% }
+\vspace{-1em}
+\cvsection{Research Experiences}
+\cventry{Apr. 2021--June 2021}
+    {Research assistant}{}
+    {Hajime Hirao's group}{CUHK-Shenzhen}
+    {\small
+    \textbf{Training project:} theoretical studying of quantum chemistry by \textit{Modern Quantum Chemistry}
+    \begin{itemize}[itemsep=2pt]
+        \item Implemented SCF algorithm for RHF 6-31G \cee{H2} and UHF 6-31G \cee{H2-} by Fortran.
+        \item Fixed problems in the original DIIS algorithm, which are used for accelerating scf algorithm.
+    \end{itemize}
+}
 
 
-% \cvsection{Projects}
-% \cvline{Nov. 2021}{Parallel tempering of 1-D particle using Fortran}
+\cventry{Aug. 2021--Dec. 2021}
+    {Research assistant}{}
+    {Hajime Hirao's group}{CUHK-Shenzhen}
+    {\small
+    \textbf{Project:} reaction pathway analysis--P450 C-S bond formation by TleB (PDB ID: 6J83)
+    \begin{itemize}[itemsep=2pt]
+        % \setlength\itemsep{0.25em}
+        % \item \ul{Design the whole research plan}
+        \item Build truncated model to perform DFT calculations along the proposed reaction pathway to
+        identify electronic configurations under different spin states
+            % \item Swap electrons in $\alpha$ or $\beta$ orbitals to get stable configuration
+        \item Performed molecular dynamics simulation of the initial reaction complex to determine the preferable starting
+        structure of the reaction.
+        \item Utilized quantum mechanics and molecular mechanics (QM/MM) hybrid method to investigate the
+        protein-substrate interaction, revealing an electron transfer pattern of the initial reaction complex.
+    \end{itemize}
+}
 
-\cvsection{Skills}
-% \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
-% \cvline{}{\textit{Remark:} Github repositories may be a reference for those skills}
-\cvline{Coding langs}{Python, Fortran, C, CUDA C++ and CUDA Fortran (elementary), MATLAB, \LaTeX}
-\cvline{Computer skills}{Linux (including system configuration, multi-user management, software
-compliation and installation), WSL, Git}
-% \cvline{Scientific computing}{Numpy, MATLAB, MKL (elementary)}
-\cvline{Programming tools}{Vim, VSCode, Jupyter Lab, Windows Terminal}
-\cvline{Scientific softs}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
+\cventry{Apr. 2022--Aug. 2022}
+    {Research assistant}{}
+    {Hajime Hirao's group}{CUHK-Shenzhen}
+    {\small
+    \textbf{Project:} energy decomposition analysis (EDA) and natural bonding orbital (NBO) analysis of
+    the nature of protein-drug interaction at the heme iron center in cytochrome P450 inhibition
+    \begin{itemize}[itemsep=2pt]
+        \item Write an example Lewis configuration for NBO input
+        \item Performed batch energy decomposition analysis (EDA) using Q-Chem.
+        \item Fixed SCF convergence problems by disabling DIIS algorithm when the error is small.
+        \item \textbf{\textit{Under Review}} Journal: Inorganic Chemistry. Manuscript ID: ic-2022-02387h.R2
+    \end{itemize}
+}
 
-
+\cventry{Jan. 2020--Dec. 2020}
+{Research assistant}{}
+{Hsien-da Huang's group}{CUHK-Shenzhen}
+{\small
+    \textbf{Project:} effects of traditional Chinese medicine in gene regulation:
+    identify DEGs using statistical methods
+    \begin{itemize}[itemsep=4pt]
+        \item Utilized PCA and t-SNE for dimensionality reduction and visualization of gene expression profile.
+        \item Arranged tutorial about using Connectivity Map to identify differentially expressed genes (DEGs) perturbed by
+        traditional medicines and interpreted statistics.
+        \item Performed gene set enrichment analysis (GSEA)
+    \end{itemize}
+}
+\newpage
 \cvsection{Teaching Experiences}
 \cventry{Sep. 2021--Dec. 2021}
 {Undergraduate student teaching fellow}{}
 {computational biology}{CUHK-Shenzhen}
 {
     \begin{itemize}[itemsep=2pt]
-        \item Create a slide about how to simplify the Schrödinger equation of hydrogen atom using
-        atomic units
-        \item Tutorial sessions: molecular docking tool Autodock-Vina;
+        \item Tutorial sessions: how to simplify the 
+        Schrödinger equation of hydrogen atom using
+        atomic units; molecular docking tool Autodock-Vina;
         review basic principles of quantum mechanics and quantum chemistry;
         mathematical background and hands-on Python implementation of principal component decomposition (PCA) algorithm
         \href{https://github.com/haoran0115/pca-implementation}{\linksymbol}
-        \item Hold office hours, homework grading, exam invigilation
     \end{itemize}
 }
-\vspace{0.5em}
 \cventry{Jan. 2022--May 2022\newline}
 {Undergraduate student teaching fellow}{}
 {organic chemistry}{CUHK-Shenzhen}
@@ -171,10 +206,20 @@ compliation and installation), WSL, Git}
         \item Tutorial sessions: basic concepts and exercises of stereochemistry;
         detailed mechanism of keto-enol tautomerism, aldol reaction,
         and Claisen condensation reaction, related exercises
-        \item Hold office hours, homework grading, exam invigilation
     \end{itemize}
 }
-\
+
+\cvsection{Skills}
+% \cvline{}{Please refer to Github repositories for reference: \href{www.github.com/haoran0115}{haoran0115}}
+% \cvline{}{\textit{Remark:} Github repositories may be a reference for those skills}
+\cvline{Coding langs}{Python, Fortran, C, CUDA C++, MATLAB, \LaTeX}
+\cvline{Computer skills}{Linux (including system configuration, multi-user management, software
+compliation and installation), WSL, Git}
+% \cvline{Scientific computing}{Numpy, MATLAB, MKL (elementary)}
+\cvline{Programming tools}{Vim, VSCode, Jupyter Lab, Windows Terminal}
+\cvline{Scientific softs}{Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools}
+
+
 \cvsection{Achievements and Honors}
 \cventry{Sep. 2018}
 {The First prize}{}
@@ -201,122 +246,18 @@ compliation and installation), WSL, Git}
 {Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
 {}
 
-% \cvsection{Courses Taken}
-% \cvline{Math \& stat}{
-%     Calculus I \& II, introduction to real analysis, numerical analysis,
-%     ordinary differential equations, linear algebra, advanced linear algebra,
-%     probability and statistics I
-% }
-% \cvline{Chem \& physics}{
-%     Mechanics, general chemistry, organic chemistry, physical chemistry I,
-%     computational (structural) biology, computational biology laboratory, biophysics,
-%     molecular simulation \& modeling I
-%     (including statistical mechanics theories, monte carlo, MD simulation algorithms)
-% }
-% \cvline{Informatics}{
-%     Introduction to computer science: programming methodology,
-%     computational laboratory,
-%     bioinformacis,
-%     computational genomics and proteomics,
-%     machine learning in computational biology,
-%     design and analysis of bioinformacis algorithms
-% }
-% \cvline{Biology}{
-%     General biology, biochemistry, cell and molecular biology, genetics
-% }
 
-\cvsection{Research Experiences}
-\cventry{Apr. 2021--Present}
-    {Research assistant}{}
-    {Hajime Hirao's group}{CUHK-Shenzhen}
-    {}
-\cvline{Apr. 2021--June 2021}{\small
-    \textbf{Training:} theoretical studying of quantum chemistry by \textit{Modern Quantum Chemistry}
-    \begin{itemize}[itemsep=2pt]
-        \item SCF algorithm coding by Fortran, including RHF 6-31G \cee{H2} molecule
-        and UHF 6-31G \cee{H_2^-} molecule
-        \item \ul{Fixed problematic DIIS algorithm} in original group Fortran code which used for acceleration
-    \end{itemize}
-}
-% \vspace{-1em}
-% \cvline{June 2021--July 2021}{\small
-%     \textbf{Training:} reaction pathway analysis--hydroxylation reaction between P450 Cpd I and propane
-%     \begin{itemize}[itemsep=0pt]
-%         \item Scan along the reaction path
-%         \item Geometry optimization of intermediates
-%         \item Calculation under different spin states
-%         \item Writing scripts to extract information and generate report efficiently
-%     \end{itemize}
-% }
-\vspace{-1em}
-\cvline{Aug. 2021--Dec. 2021}{\small
-    \textbf{Project:} reaction pathway analysis--P450 C-S bond formation by TleB (PDB ID: 6J83)
-    \begin{itemize}[itemsep=4pt]
-        % \setlength\itemsep{0.25em}
-        % \item \ul{Design the whole research plan}
-        \item Build truncated model to perform DFT calculations along the proposed reaction pathway to
-        identify electronic configurations under different spin states
-            % \item Swap electrons in $\alpha$ or $\beta$ orbitals to get stable configuration
-        \item Molecular dynamics simulation of initial reaction complex
-        to determine the starting path of the reaction
-        \begin{itemize}
-            \item Deriving MM parameters, setup system, perform MD simulations, check non-bonding interactions, check clusters in trajectory by
-            statistical algorithms, found minor sub-states by clustering algorithm
-            \item MMPBSA free energy approximation to compare population between states,
-            in order to find which binding pose is more favorable for protein
-        \end{itemize}
-        \item Using quantum mechanics + molecular mechanics (QM/MM) hybrid method to
-        investigate into the protein-substrate interaction
-        \begin{itemize}
-            \item Determine QM region of the system, use MM parameters to build up QM/MM model
-            \item Use small basis set when performing optimization, then use large basis set and
-            electronic embedding scheme to investigate electronic configurations and effect of
-            protein
-        \end{itemize}
-    \end{itemize}
-}
-\vspace{-1em}
-\cvline{Apr. 2022--Present}{\small
-    \textbf{Project:} energy decomposition analysis (EDA) and natural bonding orbital (NBO) analysis of
-    the nature of protein-drug interaction at the heme iron center in cytochrome P450 inhibition
-    \begin{itemize}[itemsep=2pt]
-        \item Write an example Lewis configuration for NBO input
-        \item Performed batch EDA analysis using Q-Chem, fix convergence problem by shutdown DIIS when error is small
-        \item The research could provide insight into inhibition drug design
-        for P450
-        \item Under review
-    \end{itemize}
-}
-
-\cventry{Jan. 2020--Dec. 2020}
-{Research assistant}{}
-{Hsien-da Huang's group}{CUHK-Shenzhen}
-{}
-\cvline{}{\small
-    \textbf{Project:} effects of traditional Chinese medicine in gene regulation:
-    identify DEGs using statistical methods
-    \begin{itemize}[itemsep=4pt]
-        \item Visualization of gene expression profile using PCA and t-SNE
-        to get a first sight of data's distribution
-        \item Group tutorial about how to use Connectivity Map
-        \begin{itemize}
-            \item Exploring databases, submitting a query, interpreting statistics and heatmap
-        \end{itemize}
-        \item Gene set enrichment analysis (GSEA) for traditional Chinese medicines perturbed
-        gene expression profile to identify differentially expressed gene sets
-    \end{itemize}
-}
 
 
 % \cvsection{Research Interests}
 % \cvline{}{Computational chemistry/biology,
 % development of free-energy calculation and TS-searching algorithms,
 % statistical learning applied to computational chemistry/biology.}
-\vspace{-1em}
 \cvsection{Language Skills}
-\cvline{}{Chinese: native\newline
-    English: TOEFL 107/120, with reading 30, listing 29, speaking 23, writing 25\newline
-    Japanese: elementary, only able to read
+\cvline{}{
+Chinese: native\newline
+English: TOEFL 107/120, with reading 30, listing 29, speaking 23, writing 25\newline
+% Japanese: elementary, only able to read
 }
 
 
