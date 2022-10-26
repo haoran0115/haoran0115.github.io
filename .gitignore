@@ -2,6 +2,7 @@ _site/
 preview.sh
 cv/*
 !cv/cv.pdf
-!cv/cv.tex
+!cv/cv_banking.tex
+!cv/cv_banking.pdf
 tmp
 Gemfile.lock

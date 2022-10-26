@@ -1,7 +1,7 @@
 \documentclass[12pt,a4paper,sans]{moderncv}
 % \usepackage[utf8]{inputenc}
 \usepackage{fontspec}
-\usepackage[scale=0.92,top=1cm]{geometry}
+\usepackage[scale=0.92,top=0.5cm]{geometry}
 \usepackage{makecell}
 \usepackage{booktabs}
 \usepackage{soul}
@@ -9,6 +9,11 @@
 \usepackage{fontspec}
 \usepackage{url}
 \usepackage{lipsum}
+
+% external link icon/symbol 
+\usepackage{fontawesome5}
+\newcommand\linksymbol{\scriptsize\faExternalLink*}
+
 % main font
 % \usepackage{libertinus}
 % \usepackage[amsthm]{libertinust1math}
@@ -29,9 +34,7 @@
 % tabular settings
 \setlength{\tabcolsep}{5pt}
 
-% external link icon/symbol 
-\usepackage{fontawesome5}
-\newcommand\linksymbol{\scriptsize\faExternalLink*}
+
 
 % % calibre font
 % \usepackage{fontspec}
@@ -134,9 +137,9 @@ leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
     the nature of protein-drug interaction at the heme iron center in cytochrome P450 inhibition
     \begin{itemize}[itemsep=2pt]
         \item Write an example Lewis configuration for NBO input
-        \item Performed batch energy decomposition analysis (EDA) using Q-Chem.
+        \item Performed energy decomposition analysis (EDA) using Q-Chem.
         \item Fixed SCF convergence problems by disabling DIIS algorithm when the error is small.
-        \item \textbf{\textit{Under Review}} Journal: Inorganic Chemistry. Manuscript ID: ic-2022-02387h.R2
+        \item \textbf{\textit{Accepted}} Journal: Inorganic Chemistry. Manuscript ID: ic-2022-02387h.R2
     \end{itemize}
 }
 \cventry{2021.8--2021.12}
@@ -174,7 +177,7 @@ leftmargin=\hintscolumnwidth+\separatorcolumnwidth+\labelwidth+\labelsep}
 {\small
     \textbf{Project:} effects of traditional Chinese medicine in gene regulation:
     identify DEGs using statistical methods
-    \begin{itemize}[itemsep=4pt]
+    \begin{itemize}[itemsep=2pt]
         \item Utilized PCA and t-SNE for dimensionality reduction and visualization of gene expression profile.
         \item Arranged tutorial about using Connectivity Map to identify differentially expressed genes (DEGs) perturbed by
         traditional medicines and interpreted statistics.
@@ -219,13 +222,9 @@ compliation and installation), WSL, Git}
 
 
 \cvsection{Achievements and Honors}
-\cventry{2018.9}
-{The First prize}{}
-{Chinese Chemistry Olympiad}{}
-{}
-\cventry{2019.9--2023.6}
-{Bowen Scholarship}{}
-{30,000 RMB/year, in total 120,000 RMB, CUHK-Shenzhen}{}
+\cventry{2022.9}
+{Dean's List Award}{}
+{School of Life and Health Sciences, CUHK-Shenzhen}{}
 {}
 \cventry{2020.9}
 {Dean's List Award}{}
@@ -235,13 +234,17 @@ compliation and installation), WSL, Git}
 {Dean's List Award}{}
 {School of Life and Health Sciences, CUHK-Shenzhen}{}
 {}
-\cventry{2022.9}
-{Dean's List Award}{}
-{School of Life and Health Sciences, CUHK-Shenzhen}{}
-{}
 \cventry{2021.9}
 {The Second prize}{}
 {Contemporary Undergraduate Mathematical Contest in Modeling, provincial level}{}
+{}
+\cventry{2019.9--2023.6}
+{Bowen Scholarship}{}
+{30,000 RMB/year, in total 120,000 RMB, CUHK-Shenzhen}{}
+{}
+\cventry{2018.9}
+{The First prize}{}
+{Chinese Chemistry Olympiad}{}
 {}
 
 

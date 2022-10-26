@@ -1,0 +1,176 @@
+\documentclass[11pt]{moderncv}
+\usepackage[scale=0.92,top=1cm,bottom=0.5cm]{geometry}
+\moderncvstyle{banking}
+%\usepackage{etoolbox} % already loaded by moderncv!
+
+% bibtex reference numbering
+\usepackage[style=mla,backend=bibtex,showmedium=false]{biblatex}
+\addbibresource{references.bib}
+% \makeatletter
+% \renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}
+% \makeatother
+
+% font settings
+\usepackage{fontspec}
+\setmainfont{Linux Libertine}
+
+\makeatletter
+\patchcmd{\makehead}{%search
+  \flushmakeheaddetails\@firstmakeheaddetailselementtrue\\\null}{%replace
+  \flushmakeheaddetails\@firstmakeheaddetailselementtrue\par\vspace{-\baselineskip}\null}{%success
+  }{%failure
+  }
+\makeatother
+
+% personal info
+\name{Haoran}{Sun}
+\address{2001 Longxiang Road}{Shenzhen}{China} % Your current address
+\phone[mobile]{+86 139 1029 0104}    % Your mobile phone number
+\email{haoransun@link.cuhk.edu.cn} 
+% \social[github]{haoran0115}
+\homepage{haoran0115.github.io}
+
+% make content compact
+\linespread{0.9}
+
+\begin{document}
+
+\maketitle
+
+% \cventry{year--year}{Degree}{Institution}{City}{\textit{Grade}}{Description}
+
+\vspace{-3em}
+
+%--------------------------Education----------------------------
+\section{Education}
+% cuhk
+\cventry{Sept. 2019--Present}
+{B.Sc., Bioinformacis; cumulative GPA: 3.716/4.000, rank 1/38; major GPA: 3.831/4.000, rank 1/38}
+{Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}
+{Shenzhen, China}
+{}
+{}
+
+% ucb
+\cventry{June 2022--Aug. 2022}
+{Summer visiting program; GPA: 4.000/4.000}
+{University of California, Berkeley}
+{Berkeley, CA}
+{}
+{\textbf{Courses:} MATH104 Introduction to Real Analysis, MATH128A Numerical Analysis, CS61C Machine Structure.}
+
+
+%---------------------------------Research------------------------------
+\section{Research Experience}
+\cventry{Apr. 2022--Aug. 2022}
+{Research assistant}
+{Prof. Hajime Hirao's group, CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf{Project:} Study the Bonding Nature of Fe-CO Complexes in heme Proteins, \textbf{accepted}
+    \begin{itemize}\setlength\itemsep{-1pt}
+        \item Wrote an example Lewis configuration of P450 Cpd I for natural bonding orbital (NBO) input.
+        % \item Performed batch energy decomposition analysis (EDA) using Q-Chem. 
+        \item Fixed Q-Chem SCF convergence problems by disabling DIIS algorithm when the error is small.
+    \end{itemize}
+}
+
+\cventry{Aug. 2021--Dec. 2021}
+{Research assistant}
+{Prof. Hajime Hirao's group, CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf {Project:} Reaction Pathway Analysis of P450 C-S Bond Formation by TleB (PDB ID: 6J83)
+    \begin{itemize}\setlength\itemsep{-1pt}
+    \item Built a truncated model and performed DFT calculations along the proposed reaction pathway to identify electronic configurations under different spin states.
+    \item Performed molecular dynamics simulation of the initial reaction complex to determine the preferable starting structure of the reaction.
+    \item Utilized quantum mechanics and molecular mechanics (QM/MM) hybrid method to investigate the protein-substrate interaction, revealing an electron transfer pattern of the initial reaction complex.
+\end{itemize}
+}
+
+\cventry{Apr. 2021--June 2021}
+{Research internship}
+{Prof. Hajime Hirao's group, CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf{Training:} Theoretical Studying of Quantum Chemistry by Modern Quantum Chemistry
+    \begin{itemize}\setlength\itemsep{-1pt}
+    \item Implemented SCF algorithm for RHF 6-31G ${H_2}$ and UHF 6-31G ${H_2^-}$ by Fortran.
+    \item Fixed problems in the original DIIS algorithm, which are used for accelerating SCF algorithm .
+\end{itemize}
+}
+
+\cventry{Sept. 2020--Dec. 2020}
+{Research assistant}
+{Prof. Hsien-da Huang's group, CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf {Project:} Effects of Traditional Chinese Medicine on Gene Regulation
+    \begin{itemize}\setlength\itemsep{-1pt}
+    \item Utilized PCA and t-SNE for dimensionality reduction of gene expression profile.
+    \item Arranged a group tutorial about using Connectivity Map to identify differentially expressed genes (DEGs) perturbed by traditional medicines and interpreted statistics. 
+    % \item Performed gene set enrichment analysis (GSEA).
+    \end{itemize}
+}
+
+%-------------------------------------Publication----------------------------------------
+% \section{Publications}
+\nocite{*}
+\printbibliography[title={Publications}]
+
+
+%------------------------------------TA----------------------------------------
+\section{Teaching Experience}
+% BIM2005
+\cventry{Sept. 2021--Dec. 2021}
+{Undergraduate student teaching fellow of BIM2005 Computational Biology}
+{CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf{Tutorials:} docking tool Autodock-Vina; 
+Hatree determinants; 
+mathematical background and Numpy implementation of PCA algorithm.}
+
+% BIM3013
+\cventry{Jan. 2022--May 2022}
+{Undergraduate student teaching fellow of BIM3013 Organic Chemistry}
+{CUHK-Shenzhen}
+{Shenzhen, China}
+{}
+{\textbf{Tutorials:} basic concepts of stereochemistry; mechanisms of condensation reactions.}
+
+
+%-------------------------------Awards-------------------------------------
+\newcommand*\dateright[1]{\hspace*{0em plus 1fill}\makebox{\textit{#1}}}
+\section{Honors and Awards}
+\begin{itemize}
+    \item \textbf{\textit{Bowen Scholarship}}, 30,000 RMB/year, in total 120,000 RMB, CUHK-Shenzhen \dateright{Sept. 2019--June 2023}
+    \item \textbf{\textit{Dean's List Award}}, CUHK-Shenzhen \dateright{Sept. 2020--Sept 2022}
+    \item \textbf{\textit{Contemporary Undergraduate Mathematical Contest in Modeling}}, The Second prize \dateright{Sept. 2021}
+    \item \textbf{\textit{Chinese Chemistry Olympiad}}, The First prize \dateright{Sept. 2018}
+\end{itemize}
+% \cvline{}{\textbf{\textit{Bowen Scholarship}}, 30,000 RMB/year, in total 120,000 RMB, CUHK-Shenzhen \dateright{Sept. 2019--June 2023}}
+% \cvline{}{\textbf{\textit{Dean's List Award}}, CUHK-Shenzhen \dateright{Sept. 2020--Sept 2022}}
+% \cvline{}{\textbf{\textit{Contemporary Undergraduate Mathematical Contest in Modeling}}, The Second prize \dateright{Sept. 2021}}
+% \cvline{}{\textbf{\textit{Chinese Chemistry Olympiad}}, The First prize \dateright{Sept. 2018}}
+
+%-------------------------------Skills-------------------------------------
+\section{Skills}
+\begin{itemize}
+    \item Coding languages: Python, Fortran, C, CUDA C++ and CUDA Fortran, OpenMP, MPI, MATLAB, \LaTeX
+    \item Tools: Linux (system configuration, multi-user management, software installation), WSL, Git
+    \item Compt. bio./chem. tools: Amber, Gromacs, Q-Chem, Gaussian, VMD, Autodock Tools
+\end{itemize}
+
+
+
+% \cventry{}
+%         {}
+%         {}
+%         {}
+%         {}
+%         {}
+
+
+\end{document}
+
