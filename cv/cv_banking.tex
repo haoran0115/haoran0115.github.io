@@ -1,5 +1,5 @@
 \documentclass[11pt]{moderncv}
-\usepackage[scale=0.92,top=0.5cm,bottom=0.5cm]{geometry}
+\usepackage[scale=0.92,top=1cm,bottom=0.5cm]{geometry}
 \moderncvstyle{banking}
 %\usepackage{etoolbox} % already loaded by moderncv!
 
@@ -13,6 +13,9 @@
 % font settings
 \usepackage{fontspec}
 \setmainfont{Linux Libertine}
+
+% chinese font
+\usepackage{xeCJK}
 
 \makeatletter
 \patchcmd{\makehead}{%search
@@ -39,9 +42,9 @@
 
 % \cventry{year--year}{Degree}{Institution}{City}{\textit{Grade}}{Description}
 
-\vspace{-3em}
 
 %--------------------------Education----------------------------
+\vspace{-3em}
 \section{Education}
 % cuhk
 \cventry{Sept. 2019--Present}
@@ -61,6 +64,7 @@
 
 
 %---------------------------------Research------------------------------
+\vspace{-0.75em}
 \section{Research Experience}
 \cventry{Apr. 2022--Aug. 2022}
 {Research assistant}
@@ -114,12 +118,14 @@
 }
 
 %-------------------------------------Publication----------------------------------------
+\vspace{-0.75em}
 % \section{Publications}
 \nocite{*}
 \printbibliography[title={Publications}]
-
+\vspace{-0.75em}
 
 %------------------------------------TA----------------------------------------
+\vspace{-0.75em}
 \section{Teaching Experience}
 % BIM2005
 \cventry{Sept. 2021--Dec. 2021}
@@ -141,6 +147,7 @@ mathematical background and Numpy implementation of PCA algorithm.}
 
 
 %-------------------------------Awards-------------------------------------
+\vspace{-0.75em}
 \newcommand*\dateright[1]{\hspace*{0em plus 1fill}\makebox{\textit{#1}}}
 \section{Honors and Awards}
 \begin{itemize}
@@ -155,6 +162,7 @@ mathematical background and Numpy implementation of PCA algorithm.}
 % \cvline{}{\textbf{\textit{Chinese Chemistry Olympiad}}, The First prize \dateright{Sept. 2018}}
 
 %-------------------------------Skills-------------------------------------
+\vspace{-0.75em}
 \section{Skills}
 \begin{itemize}
     \item Coding languages: Python, Fortran, C, CUDA C++ and CUDA Fortran, OpenMP, MPI, MATLAB, \LaTeX
