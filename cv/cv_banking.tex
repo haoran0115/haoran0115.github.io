@@ -11,11 +11,14 @@
 % \makeatother
 
 % font settings
-\usepackage{fontspec}
-\setmainfont{Linux Libertine}
-
+% \usepackage{fontspec}
+% \setmainfont{Linux Libertine}
+\usepackage{libertinus}
 % chinese font
 \usepackage{xeCJK}
+
+% chemistry symbol
+\usepackage[version=3]{mhchem}
 
 \makeatletter
 \patchcmd{\makehead}{%search
@@ -99,7 +102,7 @@
 {}
 {\textbf{Training:} Theoretical Studying of Quantum Chemistry by Modern Quantum Chemistry
     \begin{itemize}\setlength\itemsep{-1pt}
-    \item Implemented SCF algorithm for RHF 6-31G ${H_2}$ and UHF 6-31G ${H_2^-}$ by Fortran.
+    \item Implemented SCF algorithm for RHF 6-31G \cee{H2} and UHF 6-31G \cee{H2-} by Fortran.
     \item Fixed problems in the original DIIS algorithm, which are used for accelerating SCF algorithm .
 \end{itemize}
 }
