@@ -4,5 +4,6 @@ cv/*
 !cv/cv.pdf
 !cv/cv_banking.tex
 !cv/cv_banking.pdf
+!cv/references.bib
 tmp
 Gemfile.lock
