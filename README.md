@@ -7,6 +7,11 @@ Using conda to install bundler.
 conda install -c conda-forge ruby
 ```
 
+## Directory
+```
+./_config.yml   # general configs, including: profile photo & introduction
+```
+
 ## Run locally
 ```
 # run '. ~/.proxy' if needed
