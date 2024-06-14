@@ -1,0 +1,98 @@
+%! TeX program = xelatex
+%! TEX-TS program = xelatex
+\documentclass[letterpaper,11pt]{moderncv}
+\moderncvtheme[blue]{classic}
+
+% alignment
+\usepackage[scale=0.9]{geometry}
+\recomputelengths
+
+% font 
+\usepackage{xeCJK}
+\renewcommand{\familydefault}{\sfdefault}
+\setCJKmainfont{NotoSansCJKsc-Regular}
+
+% hyperlinks
+% \usepackage{hyperref}
+
+% publications 
+\usepackage[style=ieee,maxbibnames=99,sorting=ydnt]{biblatex}
+\addbibresource{publications.bib}
+
+% personal data
+\firstname{Haoran Sun}
+\familyname{孙浩然}
+\email{has015[at]ucsd.edu}
+\social[github]{haoran0115}
+\homepage{haoran0115.github.io}
+\address{9500 Gilman Dr}{La Jolla, 92093}{CA, USA}
+
+
+\begin{document}
+\maketitle
+
+
+\section{Education}
+% ucsd
+\cventry{2023--}
+{Ph.D., Chemistry}
+{University of California San Diego}{}{}
+{Thesis theme: Time-dependent and transient processes in strongly correlated 
+systems\\ 
+Advisor: Michael Galperin}
+
+% cuhk
+\cventry{2019--2023}
+{B.Sc., Bioinformatics}
+{Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)}{}{}{}
+
+% ucb
+\cventry{2022}
+{Summer visiting program}
+{University of California, Berkeley} {}{}{}
+
+% thhs
+\cventry{2016--2019}
+{Science}
+{Tsinghua University High School}{}{}{}
+
+
+% publications 
+\nocite{*}
+\printbibliography[title=Publications]
+
+
+\section{Teaching Experiences}
+\cvline{2023--}{
+    UC San Diego: Teaching Assistant
+    \begin{itemize}
+        \item CHEM 6A: General Chemistry I (Fall 2023)
+        \item CHEM 6B: General Chemistry II (Winter 2024)
+        \item CHEM 7L: General Chemistry Laboratory (Spring 2024)
+    \end{itemize}
+}
+\cvline{2019--2023}{
+    CUHK-Shenzhen: Undergraduate Student Teaching Fellow
+    \begin{itemize}
+        \item BIM2005: Computational Biology (Fall 2021)
+        \item BIM3013: Organic Chemistry (Spring 2022)
+    \end{itemize}
+}
+
+\section{Awards}
+\cvline{2019--2023}
+{Bowen Scholarship, 30,000 RMB/year, in total 120,000 RMB, CUHK-Shenzhen}
+\cvline{2020-2022}
+{Dean's List Award, CUHK-Shenzhen}
+\cvline{2021}
+{Contemporary Undergraduate Mathematical Contest in Modeling, The Second prize}
+\cvline{2018}
+{Chinese Chemistry Olympiad, The First prize (Provincial Exam)}
+
+
+
+
+
+\end{document}
+
+
