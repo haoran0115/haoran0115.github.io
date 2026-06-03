@@ -1,0 +1,6 @@
+title: Haoran
+description: Personal academic homepage
+lang: zh-CN
+markdown: kramdown
+kramdown:
+  input: GFM

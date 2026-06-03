@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="{{ page.lang | default: site.lang | default: 'zh-CN' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <style>
+      :root {
+        --bg: #fffdfa;
+        --fg: #1f1f1f;
+        --muted: #6b6b6b;
+        --line: #e8e2d8;
+        --link: #0f5c8c;
+        --panel: #f7f3ee;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 18px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 20px 72px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 2.25rem 0 0.85rem;
+        line-height: 1.25;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 2.4rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        padding-top: 1.1rem;
+        border-top: 1px solid var(--line);
+      }
+
+      p,
+      ul,
+      ol {
+        margin: 0 0 1rem;
+      }
+
+      ul,
+      ol {
+        padding-left: 1.25rem;
+      }
+
+      li + li {
+        margin-top: 0.35rem;
+      }
+
+      a {
+        color: var(--link);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(15, 92, 140, 0.25);
+      }
+
+      a:hover {
+        border-bottom-color: currentColor;
+      }
+
+      code {
+        padding: 0.12rem 0.32rem;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.05);
+        font-size: 0.92em;
+      }
+
+      pre {
+        overflow: auto;
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      pre code {
+        padding: 0;
+        background: transparent;
+      }
+
+      blockquote {
+        margin: 1.5rem 0;
+        padding-left: 1rem;
+        border-left: 3px solid var(--line);
+        color: var(--muted);
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      mjx-container[display="true"] {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.2rem 0;
+      }
+    </style>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["$$", "$$"], ["\\[", "\\]"]]
+        },
+        options: {
+          skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"]
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <main>
+      {{ content }}
+    </main>
+  </body>
+</html>
