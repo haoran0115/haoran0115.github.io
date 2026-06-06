@@ -4,6 +4,9 @@ ham_t = 1.0
 ham_U = 4.0
 trial_delta = 0.1
 
+# Hubbard-Stratonovich decoupling channel (:spin or :charge)
+hs_channel = :spin
+
 # QMC parameters
 Theta = 10.0
 beta = 0.0
@@ -14,13 +17,7 @@ Nbin = 20
 Nsweep = 200
 Nana = Nbin
 rerun = false
+Mtau = false
 
 # BLAS / MKL threads per rank
 nblas = 1
-
-# Hubbard-Stratonovich decoupling channel
-hs_channel = :charge
-
-# Time-displaced Green's-function measurement
-Mtau = false
-Nmes = -1

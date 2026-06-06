@@ -44,18 +44,14 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
     t_measure_bin = zeros(DTYPE, qpar.Nbin)
     t_stablize_bin = zeros(DTYPE, qpar.Nbin)
     acc_loc_bin = zeros(DTYPE, qpar.Nbin)
-    sign_avg_bin = zeros(DTYPE, qpar.Nbin)
-    ke_avg_bin = zeros(DTYPE, qpar.Nbin)
-    pe_avg_bin = zeros(DTYPE, qpar.Nbin)
+    mean_sign_bin = zeros(DTYPE, qpar.Nbin)
+    mean_sign_ke_bin = zeros(DTYPE, qpar.Nbin)
+    mean_sign_pe_bin = zeros(DTYPE, qpar.Nbin)
     sign = one(FTYPE)
 
     Random.seed!(seeds[irank + 1])
 
     af_gam, af_eta = discrete_hs_parameters(qpar)
-    if qpar.hs_channel == :SU2 && hpar.ham_U >= 0.0
-        λ = qpar.Naf == 2 ? acosh(exp(qpar.dtau * hpar.ham_U / 2.0)) : sqrt(qpar.dtau * hpar.ham_U / 2.0)
-        af_gam = af_gam .* exp.(-af_eta .* λ)
-    end
     build_hopping!(Tmat, Ttrial, hpar)
     degen = initialize_trial_state!(Pl, Pr, Ttrial, hpar)
 
@@ -63,8 +59,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
         expT[:, :, spin] .= exp(-qpar.dtau .* Tmat[:, :, spin])
         expmT[:, :, spin] .= exp(+qpar.dtau .* Tmat[:, :, spin])
     end
-    build_interaction!(Vmat, expV, expmV, hpar, qpar, af_eta)
-    populate_expVidx!(expVidx, hpar, qpar)
+    build_interaction!(Vmat, expV, expmV, expVidx, hpar, qpar, af_eta)
     afconf .= rand(1:qpar.Naf, size(afconf))
 
     if irank == 0
@@ -89,7 +84,6 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
         if qpar.Mtau
             obs_reset!(obtau)
         end
-        diag_local = zeros(DTYPE, 4)
 
         recalc_G_stable!(G, Bl, Br, Bl_stab, Br_stab, 0, qpar.nstab, Pl, Pr, expT, expV, expVidx, afconf, qpar.Ntau, hpar.Ns, hpar.Nf, qpar.Nv, qpar.NVdim)
         time = @elapsed for _ = 1:qpar.Nsweep
@@ -113,7 +107,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
 
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, Δ)
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, hpar.NSUN, Δ)
 
                         if abs(r) > rand()
                             acc_loc_bin[ibin] += 1.0
@@ -126,14 +120,10 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
 
                 if itau == div(qpar.Ntau, 2)
                     t_measure_bin[ibin] += @elapsed begin
-                        measure_obs_eq!(obeq, hpar, qpar, latt, sign, G)
+                        measure_obs_eq!(obeq, hpar, qpar, latt, Tmat, sign, G)
                         if qpar.Mtau && itau == qpar.Nmes0
                             measure_obs_tau!(obtau, hpar, qpar, latt, sign, G, afconf, Bl_stab, Br_stab, expT, expmT, expV, expmV, expVidx)
                         end
-                        diag_local[1] += sign
-                        diag_local[2] += kinetic_energy(G, Tmat, sign)
-                        diag_local[3] += potential_energy(G, hpar, qpar, sign)
-                        diag_local[4] += 1.0
                     end
                 end
                 if qpar.Mtau && itau == qpar.Nmes0 && itau != div(qpar.Ntau, 2)
@@ -161,11 +151,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
             for itau = qpar.Ntau:-1:1
                 if itau == div(qpar.Ntau, 2)
                     t_measure_bin[ibin] += @elapsed begin
-                        measure_obs_eq!(obeq, hpar, qpar, latt, sign, G)
-                        diag_local[1] += sign
-                        diag_local[2] += kinetic_energy(G, Tmat, sign)
-                        diag_local[3] += potential_energy(G, hpar, qpar, sign)
-                        diag_local[4] += 1.0
+                        measure_obs_eq!(obeq, hpar, qpar, latt, Tmat, sign, G)
                     end
                 end
 
@@ -173,7 +159,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
                     for iv = qpar.Nv:-1:1
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, Δ)
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, hpar.NSUN, Δ)
 
                         if abs(r) > rand()
                             acc_loc_bin[ibin] += 1.0
@@ -218,28 +204,25 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
         obs_avg!(obeq)
         obeq_avg = obs_mpi_avg(obeq, hpar, qpar)
         obtau_avg = qpar.Mtau ? obs_mpi_avg(obtau, hpar, qpar) : nothing
-        diag_root = zeros(DTYPE, 4)
-        MPI.Reduce!(diag_local, diag_root, MPI.SUM, 0, comm)
 
         if irank == 0
-            diag_root ./= nrank
             t_io = @elapsed obs_h5_append("data/data.h5", obeq_avg, latt)
             if qpar.Mtau
                 t_io += @elapsed obs_h5_append("data/data_tau.h5", obtau_avg, latt)
             end
-            mean_sign = diag_root[4] > 0 ? diag_root[1] / diag_root[4] : 0.0
-            mean_ke = abs(diag_root[1]) > 0 ? diag_root[2] / diag_root[1] : 0.0
-            mean_pe = abs(diag_root[1]) > 0 ? diag_root[3] / diag_root[1] : 0.0
-            sign_avg_bin[ibin] = mean_sign
-            ke_avg_bin[ibin] = mean_ke
-            pe_avg_bin[ibin] = mean_pe
+            mean_sign = obeq_avg.sign[1]
+            mean_ke = abs(obeq_avg.sign[1]) > 0 ? obeq_avg.KE[1] / obeq_avg.sign[1] : zero(DTYPE)
+            mean_pe = abs(obeq_avg.sign[1]) > 0 ? obeq_avg.PE[1] / obeq_avg.sign[1] : zero(DTYPE)
+            mean_sign_bin[ibin] = mean_sign
+            mean_sign_ke_bin[ibin] = obeq_avg.KE[1]
+            mean_sign_pe_bin[ibin] = obeq_avg.PE[1]
             @printf(
-                "Bin = %3d, Time = %2.3fs, sign = %+10.6f, KE = %+10.6f, PE = %+10.6f\n",
+                "Bin = %3d, Time = %2.3fs, sign = %s, KE = %s, PE = %s\n",
                 ibin,
                 time,
-                mean_sign,
-                mean_ke,
-                mean_pe,
+                fmtc(mean_sign),
+                fmtc(mean_ke),
+                fmtc(mean_pe),
             )
             @printf(
                 "propose_r = %7.3fs, mulT = %7.3fs, measure = %7.3fs, stablize = %7.3fs, io = %7.3fs\n",
@@ -268,12 +251,12 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
     end
 
     if irank == 0
-        h5open("data/data.h5", "r") do obeq_f
-            sign_data = vec(read(obeq_f["sign"]))
-            @printf("⟨sign⟩ = %+9.5f ± %9.5f\n", mean(sign_data), std(sign_data))
-        end
-        @printf("⟨KE⟩   = %+9.5f ± %9.5f\n", mean(ke_avg_bin), std(ke_avg_bin))
-        @printf("⟨PE⟩   = %+9.5f ± %9.5f\n", mean(pe_avg_bin), std(pe_avg_bin))
+        sign_jk = jackknife_mean(mean_sign_bin)
+        ke_jk = jackknife_ratio(mean_sign_ke_bin, mean_sign_bin)
+        pe_jk = jackknife_ratio(mean_sign_pe_bin, mean_sign_bin)
+        @printf("⟨sign⟩ = %s ± %s\n", fmtc(sign_jk[1]), fmtc(sign_jk[2]))
+        @printf("⟨KE⟩   = %s ± %s\n", fmtc(ke_jk[1]), fmtc(ke_jk[2]))
+        @printf("⟨PE⟩   = %s ± %s\n", fmtc(pe_jk[1]), fmtc(pe_jk[2]))
     end
 
     MPI.Barrier(comm)
@@ -287,6 +270,7 @@ const hpar = ham_par(;
     ham_t = ham_t,
     ham_U = ham_U,
     trial_delta = trial_delta,
+    hs_channel = hs_channel,
 )
 
 const qpar = qmc_par(;
@@ -303,7 +287,6 @@ const qpar = qmc_par(;
     nblas = nblas,
     hs_channel = hs_channel,
     Mtau = Mtau,
-    Nmes = Nmes,
 )
 
 if abspath(PROGRAM_FILE) == @__FILE__

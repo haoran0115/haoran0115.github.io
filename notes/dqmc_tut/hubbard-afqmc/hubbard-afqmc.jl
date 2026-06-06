@@ -10,6 +10,13 @@ using MPI
 const DTYPE = Float64
 const G_STAB_ERR = 1e-3
 
+function fmtc(z)
+    if abs(imag(z)) < 1e-10
+        return @sprintf("%+10.6f", real(z))
+    end
+    return @sprintf("%+10.6f%+10.6fim", real(z), imag(z))
+end
+
 struct ham_par
     dim::Int
     Larr::Vector{Int}
@@ -17,12 +24,13 @@ struct ham_par
     Ndim::Int
     Npart::Int
     Nf::Int
+    NSUN::Int
     ham_t::DTYPE
     ham_U::DTYPE
     trial_delta::DTYPE
 end
 
-function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1)
+function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_channel = :spin)
     dim = length(Larr)
     if dim < 1 || dim > 2
         error("Only 1D and 2D Hubbard lattices are supported")
@@ -31,8 +39,14 @@ function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1)
         error("All lattice sizes should be positive")
     end
     Ns = prod(Larr)
-    if isodd(Ns)
-        error("Half-filling requires an even number of lattice sites")
+    if hs_channel == :charge
+        Nf = 1
+        NSUN = 2
+    elseif hs_channel == :spin
+        Nf = 2
+        NSUN = 1
+    else
+        error("hs_channel must be :charge or :spin")
     end
     return ham_par(
         dim,
@@ -40,7 +54,8 @@ function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1)
         Ns,
         Ns,
         div(Ns, 2),
-        2,
+        Nf,
+        NSUN,
         DTYPE(ham_t),
         DTYPE(ham_U),
         DTYPE(trial_delta),
@@ -73,7 +88,6 @@ function qmc_par(;
     beta = 0.0,
     dtau = 0.05,
     Mtau = false,
-    Nmes = -1,
     nstab = 10,
     Naf = 4,
     Nbin = 20,
@@ -84,31 +98,9 @@ function qmc_par(;
     hs_channel = :spin,
 )
     Ntau = Int(round((Theta * 2 + beta) / dtau))
-    if !isapprox(Ntau * dtau, Theta * 2 + beta; atol = 1e-10)
-        error("(2Theta + beta) / dtau should be an integer")
-    end
     Nmes0 = Int(round(Theta / dtau))
-    if !isapprox(Nmes0 * dtau, Theta; atol = 1e-10)
-        error("Theta / dtau should be an integer")
-    end
-    if Nmes < 0
-        Nmes = Int(round((Theta + beta) / dtau))
-    end
-    if Nmes < 0
-        error("Nmes should be non-negative")
-    end
-    if Nmes0 + Nmes > Ntau
-        error("Nmes0 + Nmes should be <= Ntau")
-    end
-    if mod(Ntau, nstab) != 0
-        error("Ntau should be divisible by nstab")
-    end
-    if Naf != 2 && Naf != 4
-        error("Naf should be 2 or 4")
-    end
-    if hs_channel != :spin && hs_channel != :charge && hs_channel != :SU2
-        error("hs_channel should be :spin, :charge, or :SU2")
-    end
+    Nmes = Int(round(beta / dtau))
+
     return qmc_par(
         DTYPE(Theta),
         DTYPE(beta),
@@ -132,6 +124,8 @@ end
 
 Base.@kwdef struct obs_eq
     sign::Vector{DTYPE}
+    KE::Vector{DTYPE}
+    PE::Vector{DTYPE}
     G0::Array{DTYPE, 4}
     SzSz::Array{DTYPE, 3}
     count::Vector{Int}
@@ -140,6 +134,8 @@ end
 function obs_eq(hpar::ham_par, qpar::qmc_par)
     return obs_eq(
         sign = zeros(DTYPE, 1),
+        KE = zeros(DTYPE, 1),
+        PE = zeros(DTYPE, 1),
         G0 = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf),
         SzSz = zeros(DTYPE, 1, 1, hpar.Ns),
         count = zeros(Int, 1),
@@ -511,6 +507,7 @@ end
     expmV,
     expVidx::Array{Int, 3},
     Nf::Int,
+    NSUN::Int,
     Δ,
 )
     af_old = afconf[iv, is, itau]
@@ -521,6 +518,7 @@ end
         Δ[1, 1, i] = delta
         r *= 1.0 + delta * (1.0 - G[fidx, fidx, i])
     end
+    r = r^NSUN
     r *= af_gam[af_new] / af_gam[af_old]
     return r, fidx
 end
@@ -549,7 +547,7 @@ end
     end
 end
 
-@views @inbounds function kinetic_energy(G0, Tmat, sign)
+@views @inbounds function kinetic_energy(G0, Tmat, sign, NSUN::Int)
     ret = 0.0
     for k = 1:size(G0, 3)
         for i = 1:size(G0, 1)
@@ -558,15 +556,15 @@ end
             end
         end
     end
-    return ret
+    return NSUN * ret
 end
 
 @views @inbounds function potential_energy(G0, hpar::ham_par, qpar::qmc_par, sign)
     ret = 0.0
-    if (qpar.hs_channel == :charge || qpar.hs_channel == :SU2) && hpar.ham_U >= 0.0
+    if qpar.hs_channel == :charge
         for i = 1:hpar.Ns
             nup = 1.0 - G0[i, i, 1]
-            ndn = G0[i, i, 2]
+            ndn = 1.0 - G0[i, i, 1]
             ret += sign * hpar.ham_U * nup * ndn
         end
     else
@@ -599,6 +597,7 @@ end
     hpar::ham_par,
     qpar::qmc_par,
     latt::hubbard_latt,
+    Tmat,
     sign,
     G0,
 )
@@ -608,27 +607,29 @@ end
     end
 
     obeq.sign .+= sign
+    obeq.KE .+= kinetic_energy(G0, Tmat, sign, hpar.NSUN)
+    obeq.PE .+= potential_energy(G0, hpar, qpar, sign)
     for j = 1:hpar.Ns
         for i = 1:hpar.Ns
             idx = latt.imj[i, j]
-            obeq.G0[1, 1, idx, :] .+= sign .* real.(G0[i, j, :])
-            if (qpar.hs_channel == :charge || qpar.hs_channel == :SU2) && hpar.ham_U >= 0.0
+            obeq.G0[1, 1, idx, :] .+= sign .* G0[i, j, :]
+            if qpar.hs_channel == :charge
                 nup_i = P0[i, i, 1]
                 nup_j = P0[j, j, 1]
-                ndn_i = G0[i, i, 2]
-                ndn_j = G0[j, j, 2]
+                ndn_i = P0[i, i, 1]
+                ndn_j = P0[j, j, 1]
 
                 if i == j
-                    obeq.SzSz[1, 1, idx] += sign * real(0.25 * (nup_i + ndn_i - 2.0 * nup_i * ndn_i))
+                    obeq.SzSz[1, 1, idx] += sign * 0.25 * (nup_i + ndn_i - 2.0 * nup_i * ndn_i)
                 else
                     nn_uu = nup_i * nup_j - P0[j, i, 1] * G0[i, j, 1]
-                    nn_dd = ndn_i * ndn_j - G0[i, j, 2] * G0[j, i, 2]
+                    nn_dd = ndn_i * ndn_j - P0[j, i, 1] * G0[i, j, 1]
                     nn_ud = nup_i * ndn_j
                     nn_du = ndn_i * nup_j
-                    obeq.SzSz[1, 1, idx] += sign * real(0.25 * (nn_uu + nn_dd - nn_ud - nn_du))
+                    obeq.SzSz[1, 1, idx] += sign * 0.25 * (nn_uu + nn_dd - nn_ud - nn_du)
                 end
-            else
-                obeq.SzSz[1, 1, idx] += sign * real(szsz_corr(G0, P0, i, j))
+            elseif qpar.hs_channel == :spin
+                obeq.SzSz[1, 1, idx] += sign * szsz_corr(G0, P0, i, j)
             end
         end
     end
@@ -666,7 +667,7 @@ end
             for j = 1:hpar.Ns
                 for i = 1:hpar.Ns
                     idx = latt.imj[i, j]
-                    obtau.G00[1, 1, idx, :] .+= sign .* real.(G0[i, j, :])
+                    obtau.G00[1, 1, idx, :] .+= sign .* G0[i, j, :]
                 end
             end
         else
@@ -707,8 +708,8 @@ end
         for j = 1:hpar.Ns
             for i = 1:hpar.Ns
                 idx = latt.imj[i, j]
-                obtau.GT0[1, 1, idx, :, it_idx] .+= sign .* real.(GT0[i, j, :])
-                obtau.G0T[1, 1, idx, :, it_idx] .+= sign .* real.(G0T[i, j, :])
+                obtau.GT0[1, 1, idx, :, it_idx] .+= sign .* GT0[i, j, :]
+                obtau.G0T[1, 1, idx, :, it_idx] .+= sign .* G0T[i, j, :]
             end
         end
     end
@@ -840,17 +841,56 @@ function obs_h5_append(fname::String, obs, latt::hubbard_latt)
     end
 end
 
-function mean_std(data)
+function jackknife_mean(data)
     dim = ndims(data)
-    return cat(mean(data, dims = dim), std(data, dims = dim), dims = dim)
+    nbins = size(data, dim)
+    mean_data = mean(data, dims = dim)
+    err_data = similar(mean_data)
+
+    if nbins < 2
+        err_data .= NaN
+        return cat(mean_data, err_data, dims = dim)
+    end
+
+    total = sum(data, dims = dim)
+    leave_one_out = (total .- data) ./ (nbins - 1)
+    leave_one_out_mean = mean(leave_one_out, dims = dim)
+    err_data .= sqrt.((nbins - 1) / nbins .* sum(abs2.(leave_one_out .- leave_one_out_mean), dims = dim))
+    return cat(mean_data, err_data, dims = dim)
+end
+
+function jackknife_ratio(num, den)
+    dim = ndims(num)
+    nbins = size(num, dim)
+    den_bins = reshape(den, ntuple(i -> i == dim ? size(den, ndims(den)) : 1, dim))
+    ratio_mean = sum(num, dims = dim) ./ sum(den_bins, dims = dim)
+    ratio_err = similar(ratio_mean)
+
+    if nbins < 2
+        ratio_err .= NaN
+        return cat(ratio_mean, ratio_err, dims = dim)
+    end
+
+    num_total = sum(num, dims = dim)
+    den_total = sum(den_bins, dims = dim)
+    leave_one_out = (num_total .- num) ./ (den_total .- den_bins)
+    leave_one_out_mean = mean(leave_one_out, dims = dim)
+    ratio_err .= sqrt.((nbins - 1) / nbins .* sum(abs2.(leave_one_out .- leave_one_out_mean), dims = dim))
+    return cat(ratio_mean, ratio_err, dims = dim)
 end
 
 function analysis(hpar::ham_par, qpar::qmc_par)
     mkpath("analysis")
     h5open("data/data.h5", "r") do in_f
         h5open("analysis/data.h5", "w") do out_f
+            sign_data = read(in_f["sign"])
             for dname in keys(in_f)
-                out_f[dname] = mean_std(read(in_f[dname]))
+                data = read(in_f[dname])
+                if dname == "sign" || dname == "count"
+                    out_f[dname] = jackknife_mean(data)
+                else
+                    out_f[dname] = jackknife_ratio(data, sign_data)
+                end
             end
         end
     end
@@ -858,8 +898,14 @@ function analysis(hpar::ham_par, qpar::qmc_par)
     if qpar.Mtau && isfile("data/data_tau.h5")
         h5open("data/data_tau.h5", "r") do in_f
             h5open("analysis/data_tau.h5", "w") do out_f
+                sign_data = read(in_f["sign"])
                 for dname in keys(in_f)
-                    out_f[dname] = mean_std(read(in_f[dname]))
+                    data = read(in_f[dname])
+                    if dname == "sign" || dname == "count"
+                        out_f[dname] = jackknife_mean(data)
+                    else
+                        out_f[dname] = jackknife_ratio(data, sign_data)
+                    end
                 end
             end
         end
@@ -884,7 +930,7 @@ function discrete_hs_parameters(qpar::qmc_par)
             -sqrt(2 * (3 - sqrt(6))),
         ]
     else
-        error("Unsupported Naf")
+        error("Naf should equals to 2 or 4")
     end
     return af_gam, af_eta
 end
@@ -930,29 +976,37 @@ function build_hopping!(Tmat, Ttrial, hpar::ham_par)
             end
         end
     else
-        error("Unsupported lattice dimension")
+        error("Larr should be 1 or 2 dimension")
     end
 end
 
-function build_interaction!(Vmat, expV, expmV, hpar::ham_par, qpar::qmc_par, af_eta)
+function build_interaction!(Vmat, expV, expmV, expVidx, hpar::ham_par, qpar::qmc_par, af_eta)
     fill!(Vmat, 0.0)
-    if hpar.ham_U >= 0.0
-        λ = qpar.Naf == 2 ? acosh(exp(qpar.dtau * hpar.ham_U / 2.0)) : sqrt(qpar.dtau * hpar.ham_U / 2.0)
-        for spin = 1:hpar.Nf
-            if qpar.hs_channel == :spin
-                spin_fac = (-1.0)^(spin + 1)
-            elseif qpar.hs_channel == :charge || qpar.hs_channel == :SU2
-                spin_fac = 1.0
-            else
-                error("Unsupported hs_channel: $(qpar.hs_channel)")
-            end
-            Vmat[1, 1, spin, 1] = λ * spin_fac
+    if qpar.hs_channel == :charge
+        if qpar.Naf == 2
+            λ = acosh(exp(-qpar.dtau * hpar.ham_U / 2.0))
+        elseif qpar.Naf == 4
+            λ = sqrt(-qpar.dtau * hpar.ham_U / 2.0)
+        else
+            error("Naf should equals to 2 or 4")
         end
-    else
-        λ = sqrt(-qpar.dtau * hpar.ham_U / 2.0)
         for spin = 1:hpar.Nf
             Vmat[1, 1, spin, 1] = λ
         end
+    elseif qpar.hs_channel == :spin
+        if qpar.Naf == 2
+            λ = acosh(exp(qpar.dtau * hpar.ham_U / 2.0))
+        elseif qpar.Naf == 4
+            λ = sqrt(qpar.dtau * hpar.ham_U / 2.0)
+        else
+            error("Naf should equals to 2 or 4")
+        end
+        Vmat[1, 1, 1, 1] = λ
+        for spin = 2:hpar.Nf
+            Vmat[1, 1, spin, 1] = -λ
+        end
+    else
+        error("hs_channel should equals to :spin or :charge")
     end
 
     for spin = 1:hpar.Nf
@@ -961,6 +1015,12 @@ function build_interaction!(Vmat, expV, expmV, hpar::ham_par, qpar::qmc_par, af_
                 expV[:, :, spin, iv, iaf] .= exp.(af_eta[iaf] .* Vmat[:, :, spin, iv])
                 expmV[:, :, spin, iv, iaf] .= exp.(-af_eta[iaf] .* Vmat[:, :, spin, iv])
             end
+        end
+    end
+
+    for is = 1:hpar.Ns
+        for iv = 1:qpar.Nv
+            expVidx[:, iv, is] .= is
         end
     end
 end
@@ -972,12 +1032,4 @@ function initialize_trial_state!(Pl, Pr, Ttrial, hpar::ham_par)
         Pl[:, :, spin] = Pr[:, :, spin]'
     end
     return eig.values[hpar.Npart + 1]
-end
-
-function populate_expVidx!(expVidx, hpar::ham_par, qpar::qmc_par)
-    for is = 1:hpar.Ns
-        for iv = 1:qpar.Nv
-            expVidx[:, iv, is] .= is
-        end
-    end
 end

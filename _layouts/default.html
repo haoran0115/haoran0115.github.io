@@ -32,6 +32,37 @@
         padding: 48px 20px 72px;
       }
 
+      @media (min-width: 1100px) {
+        main:has(> #markdown-toc) {
+          display: grid;
+          grid-template-columns: 220px minmax(0, 1fr);
+          column-gap: 48px;
+          max-width: 1080px;
+          align-items: start;
+        }
+
+        main:has(> #markdown-toc) > h1:first-child {
+          grid-column: 2;
+          width: auto;
+          max-width: none;
+          justify-self: stretch;
+          margin-bottom: 0.5rem;
+        }
+
+        main:has(> #markdown-toc) > #markdown-toc {
+          grid-column: 1;
+          grid-row: 2 / span 999;
+          position: sticky;
+          top: 48px;
+          margin: 0;
+          padding-right: 12px;
+        }
+
+        main:has(> #markdown-toc) > *:not(h1):not(#markdown-toc) {
+          grid-column: 2;
+        }
+      }
+
       h1,
       h2,
       h3 {
@@ -111,6 +142,39 @@
 
       .muted {
         color: var(--muted);
+      }
+
+      #markdown-toc {
+        margin: 1.5rem 0 2rem;
+        padding: 1rem 0 1rem 1rem;
+        border-left: 1px solid var(--line);
+        font-size: 0.95rem;
+        line-height: 1.55;
+      }
+
+      #markdown-toc,
+      #markdown-toc ul,
+      #markdown-toc ol {
+        list-style: none;
+      }
+
+      #markdown-toc ul,
+      #markdown-toc ol {
+        margin: 0.35rem 0 0.35rem 0.9rem;
+        padding-left: 0.75rem;
+      }
+
+      #markdown-toc li {
+        margin: 0.28rem 0;
+      }
+
+      #markdown-toc a {
+        color: var(--muted);
+        border-bottom: none;
+      }
+
+      #markdown-toc a:hover {
+        color: var(--fg);
       }
 
       mjx-container[display="true"] {
