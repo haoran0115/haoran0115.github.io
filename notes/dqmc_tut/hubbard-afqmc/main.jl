@@ -2,6 +2,9 @@ include("hubbard-afqmc.jl")
 include("seeds.jl")
 
 function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
+
+    # MPI initialization
+    # each MPI process corresponds to a Markov chain
     MPI.Init()
     comm = MPI.COMM_WORLD
     irank = MPI.Comm_rank(comm)
@@ -11,59 +14,106 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
         error("Need at least $nrank seeds")
     end
 
+    # multi-threading within a single Markov chain
+    # useful for accelerating matrix multiplications
     BLAS.set_num_threads(qpar.nblas)
 
+    # lattice object, useful for lattice Fourier transformations
     latt = hubbard_latt(hpar)
+
+    # nsblock = Ntau / nstab, number of stabliation blocs
     nsblock = div(qpar.Ntau, qpar.nstab)
-    FTYPE = DTYPE
 
-    Ttrial = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    Tmat = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    expT = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    expmT = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    Vmat = zeros(FTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv)
-    expV = zeros(FTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
-    expmV = zeros(FTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
+    # kinetic matrices
+    # Tmat = T_{ij}
+    Tmat = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+    # Ttrial is the one-body matrix for 
+    Ttrial = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+    # e^{+dtau * Tmat}
+    expT = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+    # e^{-dtau * Tmat}
+    expmT = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+
+    # HS-decoupled interaction matrices
+    # Vmat = Vi
+    Vmat = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv)
+    # expV  = exp(+sqrt(-λi * Δτ) * Vi)
+    expV = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
+    # expmV = exp(-sqrt(-λi * Δτ) * Vi)
+    expmV = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
+    # expVidx 
     expVidx = zeros(Int, qpar.NVdim, qpar.Nv, hpar.Ns)
+    # auxiliary field configuration C
     afconf = zeros(Int, qpar.Nv, hpar.Ns, qpar.Ntau)
-    Pl = zeros(FTYPE, hpar.Npart, hpar.Ndim, hpar.Nf)
-    Pr = zeros(FTYPE, hpar.Ndim, hpar.Npart, hpar.Nf)
-    Bl = zeros(FTYPE, hpar.Npart, hpar.Ndim, hpar.Nf)
-    Br = zeros(FTYPE, hpar.Ndim, hpar.Npart, hpar.Nf)
-    Bl_stab = zeros(FTYPE, hpar.Npart, hpar.Ndim, hpar.Nf, nsblock + 1)
-    Br_stab = zeros(FTYPE, hpar.Ndim, hpar.Npart, hpar.Nf, nsblock + 1)
-    G = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    G_ = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    Δ = zeros(FTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf)
-    B12 = zeros(FTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
 
+    # left and right trial wavefunction
+    Pl = zeros(DTYPE, hpar.Npart, hpar.Ndim, hpar.Nf)
+    Pr = zeros(DTYPE, hpar.Ndim, hpar.Npart, hpar.Nf)
+
+    # left and right propagators
+    Bl = zeros(DTYPE, hpar.Npart, hpar.Ndim, hpar.Nf)
+    Br = zeros(DTYPE, hpar.Ndim, hpar.Npart, hpar.Nf)
+
+    # what's this? check
+    B12 = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+
+    # stablized left and right propagators
+    Bl_stab = zeros(DTYPE, hpar.Npart, hpar.Ndim, hpar.Nf, nsblock + 1)
+    Br_stab = zeros(DTYPE, hpar.Ndim, hpar.Npart, hpar.Nf, nsblock + 1)
+    
+    # G_{ij} = ⟨c_i c_j^†⟩ is the time-equal Green's function
+    G = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+    G_ = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
+    Δ = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf)
+
+    # time-equal observables
     obeq = obs_eq(hpar, qpar)
+    # time-displaced observables
     obtau = qpar.Mtau ? obs_tau(hpar, qpar) : nothing
+
+    # execution time statistics
     t_propose_bin = zeros(DTYPE, qpar.Nbin)
     t_mulTmat_bin = zeros(DTYPE, qpar.Nbin)
     t_measure_bin = zeros(DTYPE, qpar.Nbin)
     t_stablize_bin = zeros(DTYPE, qpar.Nbin)
+    
+    # acceptance rate
     acc_loc_bin = zeros(DTYPE, qpar.Nbin)
+
+    # scalar observables
     mean_sign_bin = zeros(DTYPE, qpar.Nbin)
     mean_sign_ke_bin = zeros(DTYPE, qpar.Nbin)
     mean_sign_pe_bin = zeros(DTYPE, qpar.Nbin)
-    sign = one(FTYPE)
 
+    # initialize fermion sign
+    sign = one(DTYPE)
+
+    # initialize random seed
     Random.seed!(seeds[irank + 1])
 
+    # initialize HS field
+    # af_gam: γ, af_eta: η
     af_gam, af_eta = discrete_hs_parameters(qpar)
+
+    # build hopping matrices
     build_hopping!(Tmat, Ttrial, hpar)
+
+    # check degeneracies of trial wavefunction
     degen = initialize_trial_state!(Pl, Pr, Ttrial, hpar)
 
-    for spin = 1:hpar.Nf
-        expT[:, :, spin] .= exp(-qpar.dtau .* Tmat[:, :, spin])
-        expmT[:, :, spin] .= exp(+qpar.dtau .* Tmat[:, :, spin])
+    # compute e^(-dtau * T) and e^(+dtau * T)
+    for ifl = 1:hpar.Nf
+        expT[:, :, ifl] .= exp(-qpar.dtau .* Tmat[:, :, ifl])
+        expmT[:, :, ifl] .= exp(+qpar.dtau .* Tmat[:, :, ifl])
     end
+
+    # build interaction matrices
     build_interaction!(Vmat, expV, expmV, expVidx, hpar, qpar, af_eta)
     afconf .= rand(1:qpar.Naf, size(afconf))
 
+    # irank==0: only let master process print the information
     if irank == 0
-        @printf("Degen = %f\n", degen)
+        @printf("Trial WF degen = %f\n", degen)
         mkpath("data/chk")
         obs_h5_init("data/data.h5", obeq, qpar.rerun, latt)
         if qpar.Mtau
@@ -72,66 +122,80 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
     end
     MPI.Barrier(comm)
 
+    # stablization error check
     G_err_max = 0.0
     G_err_mean = 0.0
     N_stab_checks = 0
 
+    # construct stablized projected operators
     construct_Bl_Br!(Bl, Br, Bl_stab, Br_stab, qpar.nstab, Pl, Pr, expT, expV, expVidx, afconf, qpar.Ntau, hpar.Ns, hpar.Nf, qpar.Nv, qpar.NVdim)
+    # calculate equal-time Green's function at itau = 0
     recalc_G_stable!(G, Bl, Br, Bl_stab, Br_stab, 0, qpar.nstab, Pl, Pr, expT, expV, expVidx, afconf, qpar.Ntau, hpar.Ns, hpar.Nf, qpar.Nv, qpar.NVdim)
 
+    # for each bin
     for ibin = 1:qpar.Nbin
+
+        # reset observables to zero
         obs_reset!(obeq)
         if qpar.Mtau
             obs_reset!(obtau)
         end
 
+        # re-calculate equal-time Green's function at itau = 0
         recalc_G_stable!(G, Bl, Br, Bl_stab, Br_stab, 0, qpar.nstab, Pl, Pr, expT, expV, expVidx, afconf, qpar.Ntau, hpar.Ns, hpar.Nf, qpar.Nv, qpar.NVdim)
+
+        # for each sweep
         time = @elapsed for _ = 1:qpar.Nsweep
+
+            # forward sweep
+            # for each imaginary time slice
             for itau = 1:qpar.Ntau
-                t_mulTmat_bin[ibin] += @elapsed @views @inbounds for spin = 1:hpar.Nf
-                    mul!(B12[:, :, spin], expT[:, :, spin], G[:, :, spin])
-                    mul!(G[:, :, spin], B12[:, :, spin], expmT[:, :, spin])
+                # propagate Green's function, kinetic part
+                t_mulTmat_bin[ibin] += @elapsed @views @inbounds for ifl = 1:hpar.Nf
+                    mul!(B12[:, :, ifl], expT[:, :, ifl], G[:, :, ifl])
+                    mul!(G[:, :, ifl], B12[:, :, ifl], expmT[:, :, ifl])
                 end
 
+                # for each spatial index
                 t_propose_bin[ibin] += @elapsed for is = 1:hpar.Ns
                     for iv = 1:qpar.Nv
+                        # propagate Green's function
                         af_curr = afconf[iv, is, itau]
                         fidx = expVidx[1, iv, is]
-
-                        @views @inbounds for spin = 1:hpar.Nf
-                            v = expV[1, 1, spin, iv, af_curr]
-                            mv = expmV[1, 1, spin, iv, af_curr]
-                            prop_left_1x1!(G, v, fidx, spin)
-                            prop_right_1x1!(G, mv, fidx, spin)
+                        @views @inbounds for ifl = 1:hpar.Nf
+                            v = expV[1, 1, ifl, iv, af_curr]
+                            mv = expmV[1, 1, ifl, iv, af_curr]
+                            prop_left_1x1!(G, v, fidx, ifl)
+                            prop_right_1x1!(G, mv, fidx, ifl)
                         end
 
+                        # propose new auxiliary field
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, hpar.NSUN, Δ)
-
-                        if abs(r) > rand()
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, expVidx, hpar.Nf, hpar.NSUN, hpar.hs_channel, Δ)
+                        r_real = real(r)
+                        r_weight = abs(r_real)
+                        # Metropolis-Hastings accept/reject
+                        # if accept, update sign, field configs, Green's function
+                        # the code is implemented in the general case, where r might be not non-negative
+                        if r_weight > 0 && r_weight > rand()
                             acc_loc_bin[ibin] += 1.0
-                            sign *= r / abs(r)
+                            sign *= r_real / r_weight
                             afconf[iv, is, itau] = af_new
                             update_G_1x1!(G, Δ, fidx, hpar.Nf)
                         end
                     end
                 end
 
+                # measure time-equal Green's function
+                # ⟨e^{-(Θ+β/2)H} c_i c_j^† e^{-(Θ+β/2)H}⟩ / ⟨e^{-(2Θ+β)H}⟩
                 if itau == div(qpar.Ntau, 2)
                     t_measure_bin[ibin] += @elapsed begin
                         measure_obs_eq!(obeq, hpar, qpar, latt, Tmat, sign, G)
-                        if qpar.Mtau && itau == qpar.Nmes0
-                            measure_obs_tau!(obtau, hpar, qpar, latt, sign, G, afconf, Bl_stab, Br_stab, expT, expmT, expV, expmV, expVidx)
-                        end
-                    end
-                end
-                if qpar.Mtau && itau == qpar.Nmes0 && itau != div(qpar.Ntau, 2)
-                    t_measure_bin[ibin] += @elapsed begin
-                        measure_obs_tau!(obtau, hpar, qpar, latt, sign, G, afconf, Bl_stab, Br_stab, expT, expmT, expV, expmV, expVidx)
                     end
                 end
 
+                # stablization
                 if mod(itau, qpar.nstab) == 0
                     t_stablize_bin[ibin] += @elapsed begin
                         copyto!(G_, G)
@@ -148,42 +212,60 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
                 end
             end
 
+            # downward sweep, almost same as the upward sweep
             for itau = qpar.Ntau:-1:1
+                # measure time-equal observables
+                # e.g. time-equal Green's function ⟨e^{-(Θ+β/2)H} c_i c_j^† e^{-(Θ+β/2)H}⟩ / ⟨e^{-(2Θ+β)H}⟩
                 if itau == div(qpar.Ntau, 2)
                     t_measure_bin[ibin] += @elapsed begin
                         measure_obs_eq!(obeq, hpar, qpar, latt, Tmat, sign, G)
                     end
                 end
 
+                # measure time-dispalced Green's function
+                # e.g. time-dispalced Green's function ⟨e^{-(Θ+β/2)H} c_i(τ) c_j^† e^{-(Θ+β/2)H}⟩ / ⟨e^{-(2Θ+β)H}⟩
+                if qpar.Mtau && itau == hpar.Nmes0
+                    t_measure_bin[ibin] += @elapsed begin
+                        measure_obs_tau!(obtau, hpar, qpar, latt, sign, G, afconf, Bl_stab, Br_stab, expT, expmT, expV, expmV, expVidx)
+                    end
+                end
+
                 t_propose_bin[ibin] += @elapsed for is = hpar.Ns:-1:1
                     for iv = qpar.Nv:-1:1
+                        # propose new auxiliary field
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, itau, is, iv, G, expV, expmV, expVidx, hpar.Nf, hpar.NSUN, Δ)
-
-                        if abs(r) > rand()
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, expVidx, hpar.Nf, hpar.NSUN, hpar.hs_channel, Δ)
+                        r_real = real(r)
+                        r_weight = abs(r_real)
+                        # Metropolis-Hastings accept/reject
+                        # if accept, update sign, field configs, Green's function
+                        if r_weight > 0 && r_weight > rand()
                             acc_loc_bin[ibin] += 1.0
-                            sign *= r / abs(r)
+                            sign *= r_real / r_weight
                             afconf[iv, is, itau] = af_new
                             update_G_1x1!(G, Δ, fidx, hpar.Nf)
                         end
 
+                        # propagate Green's function
                         af_curr = afconf[iv, is, itau]
                         fidx = expVidx[1, iv, is]
-                        @views @inbounds for spin = 1:hpar.Nf
-                            mv = expmV[1, 1, spin, iv, af_curr]
-                            v = expV[1, 1, spin, iv, af_curr]
-                            prop_left_1x1!(G, mv, fidx, spin)
-                            prop_right_1x1!(G, v, fidx, spin)
+                        @views @inbounds for ifl = 1:hpar.Nf
+                            mv = expmV[1, 1, ifl, iv, af_curr]
+                            v = expV[1, 1, ifl, iv, af_curr]
+                            prop_left_1x1!(G, mv, fidx, ifl)
+                            prop_right_1x1!(G, v, fidx, ifl)
                         end
                     end
                 end
 
-                t_mulTmat_bin[ibin] += @elapsed @views @inbounds for spin = 1:hpar.Nf
-                    mul!(B12[:, :, spin], expmT[:, :, spin], G[:, :, spin])
-                    mul!(G[:, :, spin], B12[:, :, spin], expT[:, :, spin])
+                # propagate Green's function, kinetic part
+                t_mulTmat_bin[ibin] += @elapsed @views @inbounds for ifl = 1:hpar.Nf
+                    mul!(B12[:, :, ifl], expmT[:, :, ifl], G[:, :, ifl])
+                    mul!(G[:, :, ifl], B12[:, :, ifl], expT[:, :, ifl])
                 end
 
+                # stablization
                 if mod(itau - 1, qpar.nstab) == 0
                     t_stablize_bin[ibin] += @elapsed begin
                         copyto!(G_, G)
@@ -201,10 +283,17 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
             end
         end
 
+        # average observables over a single bin
         obs_avg!(obeq)
+        if qpar.Mtau
+            obs_avg!(obtau)
+        end
+
+        # average observables over all Markov chains
         obeq_avg = obs_mpi_avg(obeq, hpar, qpar)
         obtau_avg = qpar.Mtau ? obs_mpi_avg(obtau, hpar, qpar) : nothing
 
+        # print information and save data
         if irank == 0
             t_io = @elapsed obs_h5_append("data/data.h5", obeq_avg, latt)
             if qpar.Mtau
@@ -250,6 +339,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
         @save "data/chk/afconf_$irank.jld2" afconf
     end
 
+    # print some scalar measurement at the end of simulation
     if irank == 0
         sign_jk = jackknife_mean(mean_sign_bin)
         ke_jk = jackknife_ratio(mean_sign_ke_bin, mean_sign_bin)
@@ -271,6 +361,9 @@ const hpar = ham_par(;
     ham_U = ham_U,
     trial_delta = trial_delta,
     hs_channel = hs_channel,
+    Theta = Theta,
+    beta = beta,
+    dtau = dtau,
 )
 
 const qpar = qmc_par(;
@@ -285,7 +378,6 @@ const qpar = qmc_par(;
     Nana = Nana,
     rerun = rerun,
     nblas = nblas,
-    hs_channel = hs_channel,
     Mtau = Mtau,
 )
 

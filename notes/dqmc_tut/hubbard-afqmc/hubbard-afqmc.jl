@@ -7,9 +7,11 @@ using JLD2
 using HDF5
 using MPI
 
-const DTYPE = Float64
+const DTYPE = ComplexF64
 const G_STAB_ERR = 1e-3
 
+# formatting helper
+# string format function for real and complex number
 function fmtc(z)
     if abs(imag(z)) < 1e-10
         return @sprintf("%+10.6f", real(z))
@@ -17,20 +19,33 @@ function fmtc(z)
     return @sprintf("%+10.6f%+10.6fim", real(z), imag(z))
 end
 
+# data structures and constructors
+# ham_par data struct: parameters related to Hamiltonian and system size
 struct ham_par
-    dim::Int
-    Larr::Vector{Int}
-    Ns::Int
-    Ndim::Int
-    Npart::Int
-    Nf::Int
-    NSUN::Int
-    ham_t::DTYPE
-    ham_U::DTYPE
-    trial_delta::DTYPE
+    # system geometries
+    dim::Int           # system dimension
+    Larr::Vector{Int}  # system size, Larr = [L1, ..., Ldim], dim = 1, 2
+    Ns::Int            # number of unit cells, Ns = L1 * L2 * ... * Ldim
+    Ndim::Int          # dimension of fermion matrices, in the Hubbard model Ndim = Ns
+    Npart::Int         # number of particles (per spin index), the code assumes N↑ = N↓
+
+    # flavor symmetries
+    Nf::Int            # number of fermion flavors (spin), Nf = 2 (↑ and ↓) if the HS decoupling breaks the SU(2) symmetry
+    NSUN::Int          # N in SUN symmetry, for SU(2)-symmetric HS decoupling, NSUN = 2
+
+    # Hamiltonian parameters
+    ham_t::DTYPE       # hopping t in Hubbard model
+    ham_U::DTYPE       # interaction U in Hubbard model
+
+    # trial wavefunction parameters
+    trial_delta::DTYPE # trial wavefunction parameter, which opens a gap in the trial kinetic matrix to avoid degeneracies
+    hs_channel::Symbol
+    Nmes::Int
+    Nmes0::Int
 end
 
-function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_channel = :spin)
+# ham_par initialization function
+function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_channel = :spin, Theta = 5.0, beta = 0.0, dtau = 0.05)
     dim = length(Larr)
     if dim < 1 || dim > 2
         error("Only 1D and 2D Hubbard lattices are supported")
@@ -39,15 +54,17 @@ function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_c
         error("All lattice sizes should be positive")
     end
     Ns = prod(Larr)
-    if hs_channel == :charge
+    if hs_channel == :SU2
         Nf = 1
         NSUN = 2
     elseif hs_channel == :spin
         Nf = 2
         NSUN = 1
     else
-        error("hs_channel must be :charge or :spin")
+        error("hs_channel must be :SU2 or :spin")
     end
+    Nmes0 = Int(round(Theta / dtau))
+    Nmes = Int(round(beta / dtau))
     return ham_par(
         dim,
         collect(Larr),
@@ -59,29 +76,35 @@ function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_c
         DTYPE(ham_t),
         DTYPE(ham_U),
         DTYPE(trial_delta),
+        hs_channel,
+        Nmes,
+        Nmes0,
     )
 end
 
+# qmc_par data struct: quantum monte carlo simulation parameters
 struct qmc_par
-    Theta::DTYPE
-    beta::DTYPE
-    dtau::DTYPE
-    Ntau::Int
-    Mtau::Bool
-    Nmes::Int
-    Nmes0::Int
-    Nv::Int
-    NVdim::Int
-    nstab::Int
-    Naf::Int
-    Nbin::Int
-    Nsweep::Int
-    Nana::Int
-    rerun::Bool
-    nblas::Int
-    hs_channel::Symbol
+    # imaginary time projection parameters
+    # ⟨O⟩ = ⟨Ψ| e^{-(Θ+β/2)H} O e^{-(Θ+β/2)H} |Ψ⟩ / ⟨Ψ| e^{-(2Θ+β)H} |Ψ⟩
+    Theta::DTYPE  # Θ
+    beta::DTYPE   # β
+    dtau::DTYPE   # imaginary time discritization Δτ
+    Ntau::Int     # Nτ = (2Θ+β)/Δτ
+
+    # measurement variables
+    Mtau::Bool    # if measure time-dependent variables or not
+    Nv::Int       # number of interaction vertices per unit cell
+    NVdim::Int    # dimension of interaction vertices
+    nstab::Int    # perform stablization every nstab*Δτ time
+    Naf::Int      # number of auxiliary field components, 2 for Ising-type and 4 for Gauss-Hermite type
+    Nbin::Int     # number of statistical bins
+    Nsweep::Int   # number of sweeps (forward+backward) within one bin
+    Nana::Int     # postprocessing and analysis will be performed every Nana bins
+    rerun::Bool   # if resume from the previous run or not
+    nblas::Int    # number of BLAS/MKL threads per process
 end
 
+# qmc_par initialization function
 function qmc_par(;
     dim = 1,
     Theta = 5.0,
@@ -95,11 +118,8 @@ function qmc_par(;
     Nana = Nbin,
     rerun = false,
     nblas = 1,
-    hs_channel = :spin,
 )
     Ntau = Int(round((Theta * 2 + beta) / dtau))
-    Nmes0 = Int(round(Theta / dtau))
-    Nmes = Int(round(beta / dtau))
 
     return qmc_par(
         DTYPE(Theta),
@@ -107,8 +127,6 @@ function qmc_par(;
         DTYPE(dtau),
         Ntau,
         Mtau,
-        Nmes,
-        Nmes0,
         1,
         1,
         nstab,
@@ -118,19 +136,20 @@ function qmc_par(;
         Nana,
         rerun,
         nblas,
-        hs_channel,
     )
 end
 
+# equal-time observables struct
 Base.@kwdef struct obs_eq
-    sign::Vector{DTYPE}
-    KE::Vector{DTYPE}
-    PE::Vector{DTYPE}
-    G0::Array{DTYPE, 4}
-    SzSz::Array{DTYPE, 3}
-    count::Vector{Int}
+    sign::Vector{DTYPE}    # averaged sign of fermion weight Re W[C]
+    KE::Vector{DTYPE}      # kinetic energy
+    PE::Vector{DTYPE}      # potential energy
+    G0::Array{DTYPE, 4}    # time-equal Green's function
+    SzSz::Array{DTYPE, 3}  # SzSz[i-j] = ⟨Sz_i Sz_j⟩, where Sz_i = ni↑ - ni↓
+    count::Vector{Int}     # number of measurements
 end
 
+# obs_eq initialization function
 function obs_eq(hpar::ham_par, qpar::qmc_par)
     return obs_eq(
         sign = zeros(DTYPE, 1),
@@ -142,35 +161,40 @@ function obs_eq(hpar::ham_par, qpar::qmc_par)
     )
 end
 
+# time-displaced observables struct
 Base.@kwdef struct obs_tau
-    sign::Vector{DTYPE}
-    G00::Array{DTYPE, 4}
-    GT0::Array{DTYPE, 5}
-    G0T::Array{DTYPE, 5}
+    sign::Vector{DTYPE}  # averaged sign of fermion weight Re W[C]
+    G00::Array{DTYPE, 4} #  ⟨ci(0) cj†(0)⟩
+    GT0::Array{DTYPE, 5} #  ⟨ci(t) cj†(0)⟩
+    G0T::Array{DTYPE, 5} # -⟨cj†(t) ci(0)⟩
     count::Vector{Int}
 end
 
+# obs_tau initialization function
 function obs_tau(hpar::ham_par, qpar::qmc_par)
     return obs_tau(
         sign = zeros(DTYPE, 1),
         G00 = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf),
-        GT0 = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf, qpar.Nmes + 1),
-        G0T = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf, qpar.Nmes + 1),
+        GT0 = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf, hpar.Nmes + 1),
+        G0T = zeros(DTYPE, 1, 1, hpar.Ns, hpar.Nf, hpar.Nmes + 1),
         count = zeros(Int, 1),
     )
 end
 
+# lattice object, useful for lattice observable collections
 struct hubbard_latt
-    dim::Int
-    Larr::Vector{Int}
-    Ns::Int
-    A::Matrix{DTYPE}
-    B::Matrix{DTYPE}
-    xpts::Matrix{DTYPE}
-    kpts::Matrix{DTYPE}
-    imj::Matrix{Int}
+    dim::Int            # dimesion of lattice
+    Larr::Vector{Int}   # [L1, L2, ..., Ldim]
+    Ns::Int             # number of unit cells
+    A::Matrix{DTYPE}    # A = [a1, a2, ..., adim] the real-space basis vectors
+    B::Matrix{DTYPE}    # B = [b1, b2, ..., bdim] = 2πA^{-1} the reciprocal space basis vectors
+    xpts::Matrix{DTYPE} # real space x points: x1, x2, ..., xNs
+    kpts::Matrix{DTYPE} # reciprocal space k points
+    imj::Matrix{Int}    # index of xpts[i] - xpts[j] in xpts
+                        # e.g. xpts[imj[i, j]] = xpts[i] - xpts[j]
 end
 
+# maps x index to x vector
 function i2vec(i::Int, Larr::Vector{Int}, dim::Int)
     if dim == 1
         return [i]
@@ -181,6 +205,7 @@ function i2vec(i::Int, Larr::Vector{Int}, dim::Int)
     end
 end
 
+# maps x vector to x index
 function vec2i(vec::Vector{Int}, Larr::Vector{Int}, dim::Int)
     if dim == 1
         return mod1(vec[1], Larr[1])
@@ -191,6 +216,7 @@ function vec2i(vec::Vector{Int}, Larr::Vector{Int}, dim::Int)
     end
 end
 
+# hubbard_latt initialization
 function hubbard_latt(hpar::ham_par)
     A = Matrix{DTYPE}(I, hpar.dim, hpar.dim)
     B = (2pi) .* inv(A')
@@ -215,51 +241,182 @@ function hubbard_latt(hpar::ham_par)
     return hubbard_latt(hpar.dim, hpar.Larr, hpar.Ns, A, B, xpts, kpts, imj)
 end
 
+# model construction helpers
+# returns the discrete HS quadrature weights γ and nodes η
+function discrete_hs_parameters(qpar::qmc_par)
+    if qpar.Naf == 2
+        af_gam = DTYPE[1.0, 1.0]
+        af_eta = DTYPE[1.0, -1.0]
+    elseif qpar.Naf == 4
+        af_gam = DTYPE[
+            0.25 * (1 - sqrt(6) / 3),
+            0.25 * (1 - sqrt(6) / 3),
+            0.25 * (1 + sqrt(6) / 3),
+            0.25 * (1 + sqrt(6) / 3),
+        ]
+        af_eta = DTYPE[
+            sqrt(2 * (3 + sqrt(6))),
+            -sqrt(2 * (3 + sqrt(6))),
+            sqrt(2 * (3 - sqrt(6))),
+            -sqrt(2 * (3 - sqrt(6))),
+        ]
+    else
+        error("Naf should equals to 2 or 4")
+    end
+    return af_gam, af_eta
+end
+
+# builds the hopping matrix and the trial Hamiltonian
+function build_hopping!(Tmat, Ttrial, hpar::ham_par)
+    fill!(Tmat, 0.0)
+    fill!(Ttrial, 0.0)
+
+    if hpar.dim == 1
+        L = hpar.Larr[1]
+        for spin = 1:hpar.Nf
+            for x = 1:L
+                x1 = mod1(x + 1, L)
+                Tmat[x, x1, spin] = -hpar.ham_t
+                Tmat[x1, x, spin] = -hpar.ham_t
+
+                δ = hpar.trial_delta * (-1)^x
+                Ttrial[x, x1, spin] = -hpar.ham_t + δ
+                Ttrial[x1, x, spin] = -hpar.ham_t + δ
+            end
+        end
+    elseif hpar.dim == 2
+        Lx, Ly = hpar.Larr
+        for spin = 1:hpar.Nf
+            for x = 1:Lx
+                for y = 1:Ly
+                    i = (x - 1) * Ly + y
+                    ix = (mod1(x + 1, Lx) - 1) * Ly + y
+                    iy = (x - 1) * Ly + mod1(y + 1, Ly)
+
+                    Tmat[i, ix, spin] = -hpar.ham_t
+                    Tmat[ix, i, spin] = -hpar.ham_t
+                    Tmat[i, iy, spin] = -hpar.ham_t
+                    Tmat[iy, i, spin] = -hpar.ham_t
+
+                    δx = hpar.trial_delta * cos(pi * (x + y))
+                    δy = hpar.trial_delta
+                    Ttrial[i, ix, spin] = -hpar.ham_t * (1.0 + δx)
+                    Ttrial[ix, i, spin] = -hpar.ham_t * (1.0 + δx)
+                    Ttrial[i, iy, spin] = -hpar.ham_t * (1.0 - δy)
+                    Ttrial[iy, i, spin] = -hpar.ham_t * (1.0 - δy)
+                end
+            end
+        end
+    else
+        error("Larr should be 1 or 2 dimension")
+    end
+end
+
+# builds all local interaction matrices used in the HS update
+function build_interaction!(Vmat, expV, expmV, expVidx, hpar::ham_par, qpar::qmc_par, af_eta)
+    fill!(Vmat, 0.0)
+    if hpar.hs_channel == :SU2
+        if qpar.Naf == 2
+            λ = acosh(exp(-qpar.dtau * hpar.ham_U / hpar.NSUN))
+        elseif qpar.Naf == 4
+            λ = sqrt(-qpar.dtau * hpar.ham_U / hpar.NSUN)
+        else
+            error("Naf should equals to 2 or 4")
+        end
+        for spin = 1:hpar.Nf
+            Vmat[1, 1, spin, 1] = λ
+        end
+    elseif hpar.hs_channel == :spin
+        if qpar.Naf == 2
+            λ = acosh(exp(qpar.dtau * hpar.ham_U / 2.0))
+        elseif qpar.Naf == 4
+            λ = sqrt(qpar.dtau * hpar.ham_U / 2.0)
+        else
+            error("Naf should equals to 2 or 4")
+        end
+        Vmat[1, 1, 1, 1] = λ
+        for spin = 2:hpar.Nf
+            Vmat[1, 1, spin, 1] = -λ
+        end
+    else
+        error("hs_channel should equals to :spin or :SU2")
+    end
+
+    for spin = 1:hpar.Nf
+        for iv = 1:qpar.Nv
+            for iaf = 1:qpar.Naf
+                expV[:, :, spin, iv, iaf] .= exp.(af_eta[iaf] .* Vmat[:, :, spin, iv])
+                expmV[:, :, spin, iv, iaf] .= exp.(-af_eta[iaf] .* Vmat[:, :, spin, iv])
+            end
+        end
+    end
+
+    for is = 1:hpar.Ns
+        for iv = 1:qpar.Nv
+            expVidx[:, iv, is] .= is
+        end
+    end
+end
+
+# initializes the left and right trial Slater determinants
+function initialize_trial_state!(Pl, Pr, Ttrial, hpar::ham_par)
+    eig = eigen(Hermitian(Ttrial[:, :, 1]))
+    for spin = 1:hpar.Nf
+        Pr[:, :, spin] = eig.vectors[:, 1:hpar.Npart]
+        Pl[:, :, spin] = Pr[:, :, spin]'
+    end
+    return eig.values[hpar.Npart + 1]
+end
+
+# low-level propagation helpers
+
+# numiercal-stable matrix inversion
 function sinv(A)
     return inv(lu(A))
 end
 
+# propagate equal-time Green's function on the left
+# G = e^v * G
 @views @inbounds function prop_left_1x1!(G, v, fidx, i)
-    for col = 1:size(G, 2)
+    for col in axes(G, 2)
         G[fidx, col, i] *= v
     end
 end
 
+# propagate equal-time Green's function on the right
+# G = G * e^(-v)
 @views @inbounds function prop_right_1x1!(G, mv, fidx, i)
-    for row = 1:size(G, 1)
+    for row in axes(G, 1)
         G[row, fidx, i] *= mv
     end
 end
 
-@views @inbounds function GReq!(GR, Bl, Br, Nf)
-    for i = 1:Nf
-        GR[:, :, i] = Br[:, :, i] * sinv(Bl[:, :, i] * Br[:, :, i]) * Bl[:, :, i]
-    end
-end
-
+# calculate equal-time Green's function from projectors
 @views @inbounds function Geq!(G, Bl, Br, Nf)
     for i = 1:Nf
         G[:, :, i] = I - Br[:, :, i] * sinv(Bl[:, :, i] * Br[:, :, i]) * Bl[:, :, i]
     end
 end
 
+# legacy function to calculate the equal-time Green's function at an arbitrary time slice
+# ⟨e^{-dtau*(Ntau-itau)} ci cj† e^{-dtau*itau}⟩
 @views @inbounds function recalc_G_old!(
-    G,
-    Bl,
-    Br,
-    itau,
-    Pl,
-    Pr,
-    expT,
-    expV,
-    expVidx,
-    afconf,
-    Ntau,
-    Ns,
-    Nf,
-    Nv,
-    NVdim,
-    sbatch,
+    G,         # equal-time Green's function at time slice itau
+    Bl,        # left projected wavefunction B⟨
+    Br,        # right projected wavefunction B⟩
+    itau,      # target time slice
+    Pl,        # ⟨ΨL|
+    Pr,        # |ΨR⟩
+    expT,      # e^(-Δτ T)
+    expV,      # local interaction propagators
+    expVidx,   # site index of each local interaction vertex
+    afconf,    # auxiliary field configuration
+    Ntau,      # number of time slices
+    Ns,        # number of unit cells
+    Nf,        # number of stored fermion flavors
+    Nv,        # number of interaction vertices per unit cell
+    NVdim,     # dimension of a local interaction vertex
+    sbatch,    # QR re-orthonormalization period in time slices
 )
     Bl[:] = Pl[:]
     Br[:] = Pr[:]
@@ -303,19 +460,21 @@ end
     Geq!(G, Bl, Br, Nf)
 end
 
+# stabilized projector propagation helpers
+# constructs the cached projected wavefunctions B⟨ and B⟩ at each stabilization slice
 @views @inbounds function construct_Bl_Br!(
-    Bl,
-    Br,
-    Bl_stab,
-    Br_stab,
-    nstab,
-    Pl,
-    Pr,
-    expT,
-    expV,
-    expVidx,
-    afconf,
-    Ntau,
+    Bl,         # Bl = B⟨
+    Br,         # Br = B⟩
+    Bl_stab,    # stablized Bl at each stablization time slices
+    Br_stab,    # stablized Br at each stablization time slices
+    nstab,      # perform stablization every nstab*Δτ time
+    Pl,         # ⟨ΨL|
+    Pr,         # |Ψ_R⟩
+    expT,       # e^(-Δτ T)
+    expV,       # exp(+sqrt(-λi * Δτ) * Vi)
+    expVidx,    # index of Vi
+    afconf,     # auxiliary field configuration
+    Ntau,       # (2Θ+β)/Δτ
     Ns,
     Nf,
     Nv,
@@ -365,24 +524,25 @@ end
     end
 end
 
+# updates the cached projectors at one stabilization slice and recomputes G
 @views @inbounds function stable_G!(
-    G,
-    dir,
-    Bl_stab,
-    Br_stab,
-    Pl,
-    Pr,
-    itau,
-    nstab,
-    expT,
-    expV,
-    expVidx,
-    afconf,
-    Ntau,
-    Ns,
-    Nf,
-    Nv,
-    NVdim,
+    G,         # equal-time Green's function at the stabilized slice
+    dir,       # sweep direction, 1 for forward and 0 for backward
+    Bl_stab,   # cached left projected wavefunctions
+    Br_stab,   # cached right projected wavefunctions
+    Pl,        # ⟨ΨL|
+    Pr,        # |ΨR⟩
+    itau,      # stabilization time slice
+    nstab,     # perform stabilization every nstab*Δτ time
+    expT,      # e^(-Δτ T)
+    expV,      # local interaction propagators
+    expVidx,   # site index of each local interaction vertex
+    afconf,    # auxiliary field configuration
+    Ntau,      # number of time slices
+    Ns,        # number of unit cells
+    Nf,        # number of stored fermion flavors
+    Nv,        # number of interaction vertices per unit cell
+    NVdim,     # dimension of a local interaction vertex
 )
     istab = div(itau, nstab)
     if mod(itau, nstab) != 0
@@ -435,25 +595,26 @@ end
     Geq!(G, Bl_stab[:, :, :, istab + 1], Br_stab[:, :, :, istab + 1], Nf)
 end
 
+# reconstructs the equal-time Green's function from the nearest cached stabilization slice
 @views @inbounds function recalc_G_stable!(
-    G,
-    Bl,
-    Br,
-    Bl_stab,
-    Br_stab,
-    itau,
-    nstab,
-    Pl,
-    Pr,
-    expT,
-    expV,
-    expVidx,
-    afconf,
-    Ntau,
-    Ns,
-    Nf,
-    Nv,
-    NVdim,
+    G,         # equal-time Green's function at time slice itau
+    Bl,        # left projected wavefunction B⟨
+    Br,        # right projected wavefunction B⟩
+    Bl_stab,   # cached left projected wavefunctions
+    Br_stab,   # cached right projected wavefunctions
+    itau,      # target time slice
+    nstab,     # perform stabilization every nstab*Δτ time
+    Pl,        # ⟨ΨL|
+    Pr,        # |ΨR⟩
+    expT,      # e^(-Δτ T)
+    expV,      # local interaction propagators
+    expVidx,   # site index of each local interaction vertex
+    afconf,    # auxiliary field configuration
+    Ntau,      # number of time slices
+    Ns,        # number of unit cells
+    Nf,        # number of stored fermion flavors
+    Nv,        # number of interaction vertices per unit cell
+    NVdim,     # dimension of a local interaction vertex
 )
     istab = div(itau, nstab)
     jstab = mod(itau, nstab)
@@ -495,34 +656,45 @@ end
     Geq!(G, Bl, Br, Nf)
 end
 
+# local Metropolis update helpers
+# computes the local Metropolis ratio for a proposed HS-field update
 @views @inbounds function propose_r_1x1(
-    af_new::Int,
-    afconf::Array{Int, 3},
-    af_gam,
-    itau::Int,
-    is::Int,
-    iv::Int,
-    G,
-    expV,
-    expmV,
-    expVidx::Array{Int, 3},
-    Nf::Int,
-    NSUN::Int,
-    Δ,
+    af_new::Int,            # proposed new HS-field value
+    afconf::Array{Int, 3},  # current auxiliary field configuration
+    af_gam,                 # quadrature weights γ
+    af_eta,                 # quadrature nodes η
+    itau::Int,              # imaginary-time index
+    is::Int,                # spatial index
+    iv::Int,                # interaction-vertex index
+    G,                      # equal-time Green's function before the update
+    expV,                   # local interaction propagators
+    expmV,                  # inverse local interaction propagators
+    Vmat,                   # local HS-coupling matrices
+    expVidx::Array{Int, 3}, # site index of each local interaction vertex
+    Nf::Int,                # number of stored fermion flavors
+    NSUN::Int,              # SU(N) multiplicity represented by each stored block
+    hs_channel::Symbol,     # HS decoupling channel
+    Δ,                      # workspace storing the local rank-one update
 )
     af_old = afconf[iv, is, itau]
     fidx = expVidx[1, iv, is]
-    r = one(eltype(Δ))
+    det_ratio = one(eltype(Δ))
+    shift_ratio = one(eltype(Δ))
     for i = 1:Nf
         delta = expV[1, 1, i, iv, af_new] * expmV[1, 1, i, iv, af_old] - 1.0
         Δ[1, 1, i] = delta
-        r *= 1.0 + delta * (1.0 - G[fidx, fidx, i])
+        det_ratio *= 1.0 + delta * (1.0 - G[fidx, fidx, i])
+        if hs_channel == :SU2
+            dηg = (af_eta[af_new] - af_eta[af_old]) * Vmat[1, 1, i, iv]
+            shift_ratio *= exp(-0.5 * dηg)
+        end
     end
-    r = r^NSUN
+    r = (shift_ratio * det_ratio)^NSUN
     r *= af_gam[af_new] / af_gam[af_old]
     return r, fidx
 end
 
+# updates G after an accepted local rank-one HS-field update
 @views @inbounds function update_G_1x1!(G, Δ, fidx, Nf)
     Ndim = size(G, 1)
     for i = 1:Nf
@@ -547,6 +719,8 @@ end
     end
 end
 
+# equal-time measurement helpers
+# calculates the kinetic energy contribution sign * Tr[(I-G)T]
 @views @inbounds function kinetic_energy(G0, Tmat, sign, NSUN::Int)
     ret = 0.0
     for k = 1:size(G0, 3)
@@ -559,9 +733,10 @@ end
     return NSUN * ret
 end
 
+# calculates the potential energy contribution for the chosen HS channel
 @views @inbounds function potential_energy(G0, hpar::ham_par, qpar::qmc_par, sign)
     ret = 0.0
-    if qpar.hs_channel == :charge
+    if hpar.hs_channel == :SU2
         for i = 1:hpar.Ns
             nup = 1.0 - G0[i, i, 1]
             ndn = 1.0 - G0[i, i, 1]
@@ -575,6 +750,7 @@ end
     return ret
 end
 
+# evaluates the equal-time spin correlation ⟨Sz_i Sz_j⟩ for the spin channel
 @views @inbounds function szsz_corr(G0, P0, i, j)
     pup_i = P0[i, i, 1]
     pdn_i = P0[i, i, 2]
@@ -592,6 +768,7 @@ end
     return 0.25 * (nn_uu + nn_dd - nn_ud - nn_du)
 end
 
+# accumulates one equal-time measurement into the observable container
 @views @inbounds function measure_obs_eq!(
     obeq::obs_eq,
     hpar::ham_par,
@@ -613,7 +790,7 @@ end
         for i = 1:hpar.Ns
             idx = latt.imj[i, j]
             obeq.G0[1, 1, idx, :] .+= sign .* G0[i, j, :]
-            if qpar.hs_channel == :charge
+            if hpar.hs_channel == :SU2
                 nup_i = P0[i, i, 1]
                 nup_j = P0[j, j, 1]
                 ndn_i = P0[i, i, 1]
@@ -628,7 +805,7 @@ end
                     nn_du = ndn_i * nup_j
                     obeq.SzSz[1, 1, idx] += sign * 0.25 * (nn_uu + nn_dd - nn_ud - nn_du)
                 end
-            elseif qpar.hs_channel == :spin
+            elseif hpar.hs_channel == :spin
                 obeq.SzSz[1, 1, idx] += sign * szsz_corr(G0, P0, i, j)
             end
         end
@@ -636,21 +813,22 @@ end
     obeq.count .+= 1
 end
 
+# accumulates one time-displaced Green's function measurement
 @views @inbounds function measure_obs_tau!(
-    obtau::obs_tau,
-    hpar::ham_par,
-    qpar::qmc_par,
-    latt::hubbard_latt,
-    sign,
-    G0,
-    afconf,
-    Bl_stab,
-    Br_stab,
-    expT,
-    expmT,
-    expV,
-    expmV,
-    expVidx,
+    obtau::obs_tau,      # time-displaced observable container
+    hpar::ham_par,       # Hamiltonian and system-size parameters
+    qpar::qmc_par,       # QMC simulation parameters
+    latt::hubbard_latt,  # lattice geometry and Fourier-transform metadata
+    sign,                # current Monte Carlo sign / phase estimator
+    G0,                  # equal-time Green's function at τ = Nmes0
+    afconf,              # auxiliary field configuration
+    Bl_stab,             # cached left projected wavefunctions
+    Br_stab,             # cached right projected wavefunctions
+    expT,                # e^(-Δτ T)
+    expmT,               # e^(+Δτ T)
+    expV,                # local interaction propagators
+    expmV,               # inverse local interaction propagators
+    expVidx,             # site index of each local interaction vertex
 )
     GT0 = copy(G0)
     G0T = similar(G0)
@@ -660,8 +838,8 @@ end
         G0T[:, :, spin] .= -(I - G0[:, :, spin])
     end
 
-    for it = qpar.Nmes0:(qpar.Nmes0 + qpar.Nmes)
-        it_idx = it - qpar.Nmes0 + 1
+    for it = hpar.Nmes0:(hpar.Nmes0 + hpar.Nmes)
+        it_idx = it - hpar.Nmes0 + 1
 
         if it_idx == 1
             for j = 1:hpar.Ns
@@ -718,6 +896,8 @@ end
     obtau.count .+= 1
 end
 
+# observable accumulation and I/O helpers
+# resets all accumulated observable arrays to zero before a new bin starts
 function obs_reset!(obs)
     for fname in fieldnames(typeof(obs))
         field = getfield(obs, fname)
@@ -725,6 +905,7 @@ function obs_reset!(obs)
     end
 end
 
+# divides accumulated observables by the number of measurements in the bin
 function obs_avg!(obs)
     n = obs.count[1]
     if n == 0
@@ -737,6 +918,7 @@ function obs_avg!(obs)
     end
 end
 
+# averages one observable container over all MPI ranks / Markov chains
 function obs_mpi_avg(obs, hpar::ham_par, qpar::qmc_par)
     irank = MPI.Comm_rank(MPI.COMM_WORLD)
     nrank = MPI.Comm_size(MPI.COMM_WORLD)
@@ -754,6 +936,7 @@ function obs_mpi_avg(obs, hpar::ham_par, qpar::qmc_par)
     return obs_avg
 end
 
+# Fourier transforms a real-space two-point observable with no flavor or time indices
 function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 3}, latt::hubbard_latt)
     out = zeros(ComplexF64, size(obs))
     for k = 1:latt.Ns
@@ -765,6 +948,7 @@ function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 3}, latt::hubbard_
     return out
 end
 
+# Fourier transforms a real-space two-point observable with a flavor index
 function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 4}, latt::hubbard_latt)
     out = zeros(ComplexF64, size(obs))
     for spin = 1:size(obs, 4)
@@ -778,6 +962,7 @@ function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 4}, latt::hubbard_
     return out
 end
 
+# Fourier transforms a real-space two-point observable with flavor and time indices
 function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 5}, latt::hubbard_latt)
     out = zeros(ComplexF64, size(obs))
     for it = 1:size(obs, 5)
@@ -793,6 +978,7 @@ function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 5}, latt::hubbard_
     return out
 end
 
+# initializes the HDF5 datasets used to store raw bin-by-bin observables
 function obs_h5_init(fname::String, obs, rerun::Bool, latt::hubbard_latt)
     if isfile(fname) && rerun
         return
@@ -821,6 +1007,7 @@ function obs_h5_init(fname::String, obs, rerun::Bool, latt::hubbard_latt)
     end
 end
 
+# appends one bin of observables to the existing HDF5 datasets
 function obs_h5_append(fname::String, obs, latt::hubbard_latt)
     h5open(fname, "r+") do file
         for name in fieldnames(typeof(obs))
@@ -841,6 +1028,8 @@ function obs_h5_append(fname::String, obs, latt::hubbard_latt)
     end
 end
 
+# error analysis helpers
+# computes the jackknife mean and error bar along the last dimension
 function jackknife_mean(data)
     dim = ndims(data)
     nbins = size(data, dim)
@@ -859,6 +1048,7 @@ function jackknife_mean(data)
     return cat(mean_data, err_data, dims = dim)
 end
 
+# computes the jackknife estimate for a ratio observable num / den
 function jackknife_ratio(num, den)
     dim = ndims(num)
     nbins = size(num, dim)
@@ -879,6 +1069,7 @@ function jackknife_ratio(num, den)
     return cat(ratio_mean, ratio_err, dims = dim)
 end
 
+# reads raw measurements and writes jackknife-processed observables to analysis/
 function analysis(hpar::ham_par, qpar::qmc_par)
     mkpath("analysis")
     h5open("data/data.h5", "r") do in_f
@@ -910,126 +1101,4 @@ function analysis(hpar::ham_par, qpar::qmc_par)
             end
         end
     end
-end
-
-function discrete_hs_parameters(qpar::qmc_par)
-    if qpar.Naf == 2
-        af_gam = DTYPE[1.0, 1.0]
-        af_eta = DTYPE[1.0, -1.0]
-    elseif qpar.Naf == 4
-        af_gam = DTYPE[
-            0.25 * (1 - sqrt(6) / 3),
-            0.25 * (1 - sqrt(6) / 3),
-            0.25 * (1 + sqrt(6) / 3),
-            0.25 * (1 + sqrt(6) / 3),
-        ]
-        af_eta = DTYPE[
-            sqrt(2 * (3 + sqrt(6))),
-            -sqrt(2 * (3 + sqrt(6))),
-            sqrt(2 * (3 - sqrt(6))),
-            -sqrt(2 * (3 - sqrt(6))),
-        ]
-    else
-        error("Naf should equals to 2 or 4")
-    end
-    return af_gam, af_eta
-end
-
-function build_hopping!(Tmat, Ttrial, hpar::ham_par)
-    fill!(Tmat, 0.0)
-    fill!(Ttrial, 0.0)
-
-    if hpar.dim == 1
-        L = hpar.Larr[1]
-        for spin = 1:hpar.Nf
-            for x = 1:L
-                x1 = mod1(x + 1, L)
-                Tmat[x, x1, spin] = -hpar.ham_t
-                Tmat[x1, x, spin] = -hpar.ham_t
-
-                δ = hpar.trial_delta * (-1)^x
-                Ttrial[x, x1, spin] = -hpar.ham_t + δ
-                Ttrial[x1, x, spin] = -hpar.ham_t + δ
-            end
-        end
-    elseif hpar.dim == 2
-        Lx, Ly = hpar.Larr
-        for spin = 1:hpar.Nf
-            for x = 1:Lx
-                for y = 1:Ly
-                    i = (x - 1) * Ly + y
-                    ix = (mod1(x + 1, Lx) - 1) * Ly + y
-                    iy = (x - 1) * Ly + mod1(y + 1, Ly)
-
-                    Tmat[i, ix, spin] = -hpar.ham_t
-                    Tmat[ix, i, spin] = -hpar.ham_t
-                    Tmat[i, iy, spin] = -hpar.ham_t
-                    Tmat[iy, i, spin] = -hpar.ham_t
-
-                    δx = hpar.trial_delta * cos(pi * (x + y))
-                    δy = hpar.trial_delta
-                    Ttrial[i, ix, spin] = -hpar.ham_t * (1.0 + δx)
-                    Ttrial[ix, i, spin] = -hpar.ham_t * (1.0 + δx)
-                    Ttrial[i, iy, spin] = -hpar.ham_t * (1.0 - δy)
-                    Ttrial[iy, i, spin] = -hpar.ham_t * (1.0 - δy)
-                end
-            end
-        end
-    else
-        error("Larr should be 1 or 2 dimension")
-    end
-end
-
-function build_interaction!(Vmat, expV, expmV, expVidx, hpar::ham_par, qpar::qmc_par, af_eta)
-    fill!(Vmat, 0.0)
-    if qpar.hs_channel == :charge
-        if qpar.Naf == 2
-            λ = acosh(exp(-qpar.dtau * hpar.ham_U / 2.0))
-        elseif qpar.Naf == 4
-            λ = sqrt(-qpar.dtau * hpar.ham_U / 2.0)
-        else
-            error("Naf should equals to 2 or 4")
-        end
-        for spin = 1:hpar.Nf
-            Vmat[1, 1, spin, 1] = λ
-        end
-    elseif qpar.hs_channel == :spin
-        if qpar.Naf == 2
-            λ = acosh(exp(qpar.dtau * hpar.ham_U / 2.0))
-        elseif qpar.Naf == 4
-            λ = sqrt(qpar.dtau * hpar.ham_U / 2.0)
-        else
-            error("Naf should equals to 2 or 4")
-        end
-        Vmat[1, 1, 1, 1] = λ
-        for spin = 2:hpar.Nf
-            Vmat[1, 1, spin, 1] = -λ
-        end
-    else
-        error("hs_channel should equals to :spin or :charge")
-    end
-
-    for spin = 1:hpar.Nf
-        for iv = 1:qpar.Nv
-            for iaf = 1:qpar.Naf
-                expV[:, :, spin, iv, iaf] .= exp.(af_eta[iaf] .* Vmat[:, :, spin, iv])
-                expmV[:, :, spin, iv, iaf] .= exp.(-af_eta[iaf] .* Vmat[:, :, spin, iv])
-            end
-        end
-    end
-
-    for is = 1:hpar.Ns
-        for iv = 1:qpar.Nv
-            expVidx[:, iv, is] .= is
-        end
-    end
-end
-
-function initialize_trial_state!(Pl, Pr, Ttrial, hpar::ham_par)
-    eig = eigen(Hermitian(Ttrial[:, :, 1]))
-    for spin = 1:hpar.Nf
-        Pr[:, :, spin] = eig.vectors[:, 1:hpar.Npart]
-        Pl[:, :, spin] = Pr[:, :, spin]'
-    end
-    return eig.values[hpar.Npart + 1]
 end

@@ -7,6 +7,9 @@ const hpar = ham_par(;
     ham_U = ham_U,
     trial_delta = trial_delta,
     hs_channel = hs_channel,
+    Theta = Theta,
+    beta = beta,
+    dtau = dtau,
 )
 
 const qpar = qmc_par(;
@@ -21,7 +24,6 @@ const qpar = qmc_par(;
     Nana = Nana,
     rerun = rerun,
     nblas = nblas,
-    hs_channel = hs_channel,
     Mtau = Mtau,
 )
 

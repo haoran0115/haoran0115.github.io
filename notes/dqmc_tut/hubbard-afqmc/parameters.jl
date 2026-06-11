@@ -2,10 +2,10 @@
 Larr = [8]
 ham_t = 1.0
 ham_U = 4.0
-trial_delta = 0.1
+trial_delta = 0.01
 
-# Hubbard-Stratonovich decoupling channel (:spin or :charge)
-hs_channel = :spin
+# Hubbard-Stratonovich decoupling channel (:spin or :SU2)
+hs_channel = :SU2
 
 # QMC parameters
 Theta = 10.0
