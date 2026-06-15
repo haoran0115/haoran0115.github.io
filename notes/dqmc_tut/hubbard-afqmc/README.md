@@ -4,16 +4,16 @@ This directory contains a small Julia implementation of projector DQMC for the H
 
 The current workflow is:
 
-- edit [parameters.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/parameters.jl)
-- run [main.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/main.jl)
+- edit [parameters.jl](parameters.jl)
+- run [main.jl](main.jl)
 - inspect raw data under `data/` and analyzed data under `analysis/`
 
 ## Main files
 
-- [main.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/main.jl): runs the Monte Carlo simulation
-- [hubbard-afqmc.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/hubbard-afqmc.jl): core data structures, updates, measurements, and analysis helpers
-- [parameters.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/parameters.jl): model and QMC parameters
-- [analysis.jl](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/analysis.jl): reruns the built-in postprocessing on saved data
+- [main.jl](main.jl): runs the Monte Carlo simulation
+- [hubbard-afqmc.jl](hubbard-afqmc.jl): core data structures, updates, measurements, and analysis helpers
+- [parameters.jl](parameters.jl): model and QMC parameters
+- [analysis.jl](analysis.jl): reruns the built-in postprocessing on saved data
 
 ## Run
 
@@ -39,4 +39,4 @@ julia analysis.jl
 
 For real runnable examples that use this code, see:
 
-- [examples/2d_hub_hf_afm](/Users/shiroha/Documents/websites/haoran0115.github.io/notes/dqmc_tut/hubbard-afqmc/examples/2d_hub_hf_afm): runs a $6 \times 6$ half-filled Hubbard model and plots the AFM structure factor in momentum space.
+- [examples/2d_hub_hf_afm](examples/2d_hub_hf_afm): runs a $6 \times 6$ half-filled Hubbard model and plots the AFM structure factor in momentum space.
