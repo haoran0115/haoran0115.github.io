@@ -36,6 +36,7 @@ struct ham_par
     # Hamiltonian parameters
     ham_t::DTYPE       # hopping t in Hubbard model
     ham_U::DTYPE       # interaction U in Hubbard model
+    ham_mu::DTYPE      # chemical potential μ in Hubbard model
 
     # trial wavefunction parameters
     trial_delta::DTYPE # trial wavefunction parameter, which opens a gap in the trial kinetic matrix to avoid degeneracies
@@ -45,7 +46,7 @@ struct ham_par
 end
 
 # ham_par initialization function
-function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_channel = :spin, Theta = 5.0, beta = 0.0, dtau = 0.05)
+function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, ham_mu = 0.0, trial_delta = 0.1, hs_channel = :spin, Theta = 5.0, beta = 0.0, dtau = 0.05)
     dim = length(Larr)
     if dim < 1 || dim > 2
         error("Only 1D and 2D Hubbard lattices are supported")
@@ -75,6 +76,7 @@ function ham_par(; Larr = [8], ham_t = 1.0, ham_U = 4.0, trial_delta = 0.1, hs_c
         NSUN,
         DTYPE(ham_t),
         DTYPE(ham_U),
+        DTYPE(ham_mu),
         DTYPE(trial_delta),
         hs_channel,
         Nmes,
@@ -266,7 +268,7 @@ function discrete_hs_parameters(qpar::qmc_par)
     return af_gam, af_eta
 end
 
-# builds the hopping matrix and the trial Hamiltonian
+# builds the hopping matrix and the trial Hamiltonian, including the chemical potential
 function build_hopping!(Tmat, Ttrial, hpar::ham_par)
     fill!(Tmat, 0.0)
     fill!(Ttrial, 0.0)
@@ -282,6 +284,9 @@ function build_hopping!(Tmat, Ttrial, hpar::ham_par)
                 δ = hpar.trial_delta * (-1)^x
                 Ttrial[x, x1, spin] = -hpar.ham_t + δ
                 Ttrial[x1, x, spin] = -hpar.ham_t + δ
+
+                Tmat[x, x, spin] += -hpar.ham_mu
+                Ttrial[x, x, spin] += -hpar.ham_mu
             end
         end
     elseif hpar.dim == 2
@@ -304,6 +309,9 @@ function build_hopping!(Tmat, Ttrial, hpar::ham_par)
                     Ttrial[ix, i, spin] = -hpar.ham_t * (1.0 + δx)
                     Ttrial[i, iy, spin] = -hpar.ham_t * (1.0 - δy)
                     Ttrial[iy, i, spin] = -hpar.ham_t * (1.0 - δy)
+
+                    Tmat[i, i, spin] += -hpar.ham_mu
+                    Ttrial[i, i, spin] += -hpar.ham_mu
                 end
             end
         end
@@ -313,8 +321,9 @@ function build_hopping!(Tmat, Ttrial, hpar::ham_par)
 end
 
 # builds all local interaction matrices used in the HS update
-function build_interaction!(Vmat, expV, expmV, expVidx, hpar::ham_par, qpar::qmc_par, af_eta)
+function build_interaction!(Vmat, Vconst, expV, expmV, expVidx, hpar::ham_par, qpar::qmc_par, af_eta)
     fill!(Vmat, 0.0)
+    fill!(Vconst, 0.0)
     if hpar.hs_channel == :SU2
         if qpar.Naf == 2
             λ = acosh(exp(-qpar.dtau * hpar.ham_U / hpar.NSUN))
@@ -325,6 +334,7 @@ function build_interaction!(Vmat, expV, expmV, expVidx, hpar::ham_par, qpar::qmc
         end
         for spin = 1:hpar.Nf
             Vmat[1, 1, spin, 1] = λ
+            Vconst[spin, 1] = -0.5 * λ
         end
     elseif hpar.hs_channel == :spin
         if qpar.Naf == 2
@@ -471,14 +481,14 @@ end
     Pl,         # ⟨ΨL|
     Pr,         # |Ψ_R⟩
     expT,       # e^(-Δτ T)
-    expV,       # exp(+sqrt(-λi * Δτ) * Vi)
+    expV,       # local interaction propagators exp(+ηl * Vi)
     expVidx,    # index of Vi
     afconf,     # auxiliary field configuration
     Ntau,       # (2Θ+β)/Δτ
-    Ns,
-    Nf,
-    Nv,
-    NVdim,
+    Ns,         # number of spatial sites
+    Nf,         # number of explicitly stored fermion flavor blocks
+    Nv,         # number of interaction operators attached to each site
+    NVdim,      # local matrix dimension of each interaction operator
 )
     Bl[:] = Pl[:]
     Br[:] = Pr[:]
@@ -670,26 +680,24 @@ end
     expV,                   # local interaction propagators
     expmV,                  # inverse local interaction propagators
     Vmat,                   # local HS-coupling matrices
+    Vconst,                 # scalar HS shifts vi in V̂i = c† Vi c + vi
     expVidx::Array{Int, 3}, # site index of each local interaction vertex
     Nf::Int,                # number of stored fermion flavors
     NSUN::Int,              # SU(N) multiplicity represented by each stored block
-    hs_channel::Symbol,     # HS decoupling channel
     Δ,                      # workspace storing the local rank-one update
 )
     af_old = afconf[iv, is, itau]
     fidx = expVidx[1, iv, is]
     det_ratio = one(eltype(Δ))
-    shift_ratio = one(eltype(Δ))
+    const_ratio = one(eltype(Δ))
     for i = 1:Nf
         delta = expV[1, 1, i, iv, af_new] * expmV[1, 1, i, iv, af_old] - 1.0
         Δ[1, 1, i] = delta
         det_ratio *= 1.0 + delta * (1.0 - G[fidx, fidx, i])
-        if hs_channel == :SU2
-            dηg = (af_eta[af_new] - af_eta[af_old]) * Vmat[1, 1, i, iv]
-            shift_ratio *= exp(-0.5 * dηg)
-        end
+        dη = af_eta[af_new] - af_eta[af_old]
+        const_ratio *= exp(Vconst[i, iv] * dη)
     end
-    r = (shift_ratio * det_ratio)^NSUN
+    r = (const_ratio * det_ratio)^NSUN
     r *= af_gam[af_new] / af_gam[af_old]
     return r, fidx
 end
@@ -720,15 +728,13 @@ end
 end
 
 # equal-time measurement helpers
-# calculates the kinetic energy contribution sign * Tr[(I-G)T]
+# calculates the kinetic energy contribution sign * tr[(I - G) * T]
 @views @inbounds function kinetic_energy(G0, Tmat, sign, NSUN::Int)
-    ret = 0.0
-    for k = 1:size(G0, 3)
-        for i = 1:size(G0, 1)
-            for j = 1:size(G0, 2)
-                ret += sign * (((i == j) ? 1.0 : 0.0) - G0[i, j, k]) * Tmat[j, i, k]
-            end
-        end
+    ret = zero(eltype(G0))
+    for k in axes(G0, 3)
+        Gk = G0[:, :, k]
+        Tk = Tmat[:, :, k]
+        ret += sign * tr((I - Gk) * Tk)
     end
     return NSUN * ret
 end
@@ -761,8 +767,8 @@ end
         return 0.25 * (pup_i + pdn_i - 2.0 * pup_i * pdn_i)
     end
 
-    nn_uu = pup_i * pup_j - P0[j, i, 1] * G0[i, j, 1]
-    nn_dd = pdn_i * pdn_j - P0[j, i, 2] * G0[i, j, 2]
+    nn_uu = pup_i * pup_j + P0[j, i, 1] * G0[i, j, 1]
+    nn_dd = pdn_i * pdn_j + P0[j, i, 2] * G0[i, j, 2]
     nn_ud = pup_i * pdn_j
     nn_du = pdn_i * pup_j
     return 0.25 * (nn_uu + nn_dd - nn_ud - nn_du)
@@ -799,8 +805,8 @@ end
                 if i == j
                     obeq.SzSz[1, 1, idx] += sign * 0.25 * (nup_i + ndn_i - 2.0 * nup_i * ndn_i)
                 else
-                    nn_uu = nup_i * nup_j - P0[j, i, 1] * G0[i, j, 1]
-                    nn_dd = ndn_i * ndn_j - P0[j, i, 1] * G0[i, j, 1]
+                    nn_uu = nup_i * nup_j + P0[j, i, 1] * G0[i, j, 1]
+                    nn_dd = ndn_i * ndn_j + P0[j, i, 1] * G0[i, j, 1]
                     nn_ud = nup_i * ndn_j
                     nn_du = ndn_i * nup_j
                     obeq.SzSz[1, 1, idx] += sign * 0.25 * (nn_uu + nn_dd - nn_ud - nn_du)
@@ -951,7 +957,7 @@ end
 # Fourier transforms a real-space two-point observable with a flavor index
 function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 4}, latt::hubbard_latt)
     out = zeros(ComplexF64, size(obs))
-    for spin = 1:size(obs, 4)
+    for spin in axes(obs, 4)
         for k = 1:latt.Ns
             for i = 1:latt.Ns
                 phase = exp(-1im * dot(latt.kpts[:, k], latt.xpts[:, i])) / latt.Ns
@@ -965,8 +971,8 @@ end
 # Fourier transforms a real-space two-point observable with flavor and time indices
 function obs_realspace_to_kspace(obs::AbstractArray{<:Number, 5}, latt::hubbard_latt)
     out = zeros(ComplexF64, size(obs))
-    for it = 1:size(obs, 5)
-        for spin = 1:size(obs, 4)
+    for it in axes(obs, 5)
+        for spin in axes(obs, 4)
             for k = 1:latt.Ns
                 for i = 1:latt.Ns
                     phase = exp(-1im * dot(latt.kpts[:, k], latt.xpts[:, i])) / latt.Ns

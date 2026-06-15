@@ -5,6 +5,7 @@ const hpar = ham_par(;
     Larr = Larr,
     ham_t = ham_t,
     ham_U = ham_U,
+    ham_mu = ham_mu,
     trial_delta = trial_delta,
     hs_channel = hs_channel,
     Theta = Theta,

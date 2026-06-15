@@ -24,22 +24,24 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
     # nsblock = Ntau / nstab, number of stabliation blocs
     nsblock = div(qpar.Ntau, qpar.nstab)
 
-    # kinetic matrices
-    # Tmat = T_{ij}
+    # one-body matrices
+    # Tmat = T_{ij}, including the chemical potential if ham_mu ≠ 0
     Tmat = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
-    # Ttrial is the one-body matrix for 
+    # Ttrial is the one-body trial Hamiltonian
     Ttrial = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
     # e^{+dtau * Tmat}
     expT = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
     # e^{-dtau * Tmat}
     expmT = zeros(DTYPE, hpar.Ndim, hpar.Ndim, hpar.Nf)
 
-    # HS-decoupled interaction matrices
+    # HS-decoupled interaction matrices V̂i = c† Vi c + vi
     # Vmat = Vi
     Vmat = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv)
-    # expV  = exp(+sqrt(-λi * Δτ) * Vi)
+    # Vconst = vi
+    Vconst = zeros(DTYPE, hpar.Nf, qpar.Nv)
+    # expV[iaf]  = exp(+ηl * Vi)
     expV = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
-    # expmV = exp(-sqrt(-λi * Δτ) * Vi)
+    # expmV[iaf] = exp(-ηl * Vi)
     expmV = zeros(DTYPE, qpar.NVdim, qpar.NVdim, hpar.Nf, qpar.Nv, qpar.Naf)
     # expVidx 
     expVidx = zeros(Int, qpar.NVdim, qpar.Nv, hpar.Ns)
@@ -108,7 +110,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
     end
 
     # build interaction matrices
-    build_interaction!(Vmat, expV, expmV, expVidx, hpar, qpar, af_eta)
+    build_interaction!(Vmat, Vconst, expV, expmV, expVidx, hpar, qpar, af_eta)
     afconf .= rand(1:qpar.Naf, size(afconf))
 
     # irank==0: only let master process print the information
@@ -172,7 +174,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
                         # propose new auxiliary field
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, expVidx, hpar.Nf, hpar.NSUN, hpar.hs_channel, Δ)
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, Vconst, expVidx, hpar.Nf, hpar.NSUN, Δ)
                         r_real = real(r)
                         r_weight = abs(r_real)
                         # Metropolis-Hastings accept/reject
@@ -235,7 +237,7 @@ function run_qmc(hpar::ham_par, qpar::qmc_par, seeds::Vector{Int})
                         # propose new auxiliary field
                         af_old = afconf[iv, is, itau]
                         af_new = mod1(af_old + rand(1:qpar.Naf - 1), qpar.Naf)
-                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, expVidx, hpar.Nf, hpar.NSUN, hpar.hs_channel, Δ)
+                        r, fidx = propose_r_1x1(af_new, afconf, af_gam, af_eta, itau, is, iv, G, expV, expmV, Vmat, Vconst, expVidx, hpar.Nf, hpar.NSUN, Δ)
                         r_real = real(r)
                         r_weight = abs(r_real)
                         # Metropolis-Hastings accept/reject
@@ -359,6 +361,7 @@ const hpar = ham_par(;
     Larr = Larr,
     ham_t = ham_t,
     ham_U = ham_U,
+    ham_mu = ham_mu,
     trial_delta = trial_delta,
     hs_channel = hs_channel,
     Theta = Theta,
